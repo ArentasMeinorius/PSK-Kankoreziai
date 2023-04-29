@@ -27,7 +27,7 @@ namespace Kankoreziai.Controllers
                 TemperatureC = Random.Shared.Next(-20, 55),
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
-            .ToArray();
+            .ToArray(); 
         }
     }
 }

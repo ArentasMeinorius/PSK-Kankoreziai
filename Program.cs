@@ -1,11 +1,24 @@
+using Kankoreziai.Database;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-// Add services to the container.
+services.AddDbContext<KankoreziaiDbContext>(options => options.UseInMemoryDatabase(databaseName: "MyDatabase"));
+services.AddControllersWithViews();
 
-builder.Services.AddControllersWithViews();
+var options = new DbContextOptionsBuilder<KankoreziaiDbContext>()
+    .UseInMemoryDatabase(databaseName: "MyDatabase")
+    .Options;
+
+using (var context = new KankoreziaiDbContext(options))
+{
+    context.InitializeData();
+}
+
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
