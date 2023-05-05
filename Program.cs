@@ -5,14 +5,18 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-services.AddDbContext<KankoreziaiDbContext>(options => options.UseInMemoryDatabase(databaseName: "MyDatabase"));
+services.AddDbContext<KankoreziaiDbContext>(options => options.UseInMemoryDatabase(databaseName: "KankoreziaiDB"));
 services.AddControllersWithViews();
+services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+});
 
-var options = new DbContextOptionsBuilder<KankoreziaiDbContext>()
-    .UseInMemoryDatabase(databaseName: "MyDatabase")
+var dbOptions = new DbContextOptionsBuilder<KankoreziaiDbContext>()
+    .UseInMemoryDatabase(databaseName: "KankoreziaiDB")
     .Options;
 
-using (var context = new KankoreziaiDbContext(options))
+using (var context = new KankoreziaiDbContext(dbOptions))
 {
     context.InitializeData();
 }
@@ -29,7 +33,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSwagger(options =>
+{
+    options.RouteTemplate = "api/swagger/{documentname}/swagger.json";
+});
 
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint( "/api/swagger/v1/swagger.json", "Kankoreziai API");
+    options.RoutePrefix = "api/swagger";
+});
 
 app.MapControllerRoute(
     name: "default",
