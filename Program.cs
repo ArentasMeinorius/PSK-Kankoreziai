@@ -1,16 +1,27 @@
 using Kankoreziai.Database;
+using Kankoreziai.Middleware;
+using Kankoreziai.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
+
 var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddDbContext<KankoreziaiDbContext>(options => options.UseInMemoryDatabase(databaseName: "KankoreziaiDB"));
+
+services.AddTransient<GoogleAuthenticationMiddleware>();
+services.AddScoped<IUserService, UserService>();
+
 services.AddControllersWithViews();
 services.AddSwaggerGen(options =>
 {
     options.EnableAnnotations();
 });
+
 
 var dbOptions = new DbContextOptionsBuilder<KankoreziaiDbContext>()
     .UseInMemoryDatabase(databaseName: "KankoreziaiDB")
@@ -23,6 +34,15 @@ using (var context = new KankoreziaiDbContext(dbOptions))
 
 
 var app = builder.Build();
+
+app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().SetIsOriginAllowed(origin => true).AllowCredentials());
+
+Log.Logger = new LoggerConfiguration()
+            .Enrich.WithProperty("app", "Flower API")
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .CreateLogger();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -33,6 +53,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseMiddleware<GoogleAuthenticationMiddleware>();
+
 app.UseSwagger(options =>
 {
     options.RouteTemplate = "api/swagger/{documentname}/swagger.json";
@@ -48,6 +71,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("index.html");
 
 app.Run();
