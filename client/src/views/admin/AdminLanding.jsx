@@ -1,83 +1,60 @@
 import React from 'react';
-import { Alert, Button, Container } from '@mui/material';
+import { Button, Container } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function AdminLanding() {
-    const [isAuthConfirmationInProgress, setAuthConfirmationInProgress] = React.useState(true);
-    const [authKey, setAuthKey] = React.useState(null);
-    const [error, setError] = React.useState('');
+    const dispatch = useDispatch();
 
-    React.useEffect(() => {
-        const authKey = localStorage.getItem('authKey');
-        if (authKey) {
-            setAuthKey(authKey);
-        }
-    }, []);
+    const [isAuthConfirmationInProgress, setAuthConfirmationInProgress] = React.useState(true);
+    // eslint-disable-next-line no-unused-vars
+    const authKey = useSelector((state) => state.authentication.authKey);
+    const [user, setUser] = React.useState(null);
 
     React.useEffect(() => {
         setAuthConfirmationInProgress(true);
-        if (!authKey) {
-            setAuthConfirmationInProgress(false);
+        if (authKey) {
+            fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${authKey}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        dispatch({ type: 'CLEAR_AUTH_KEY' });
+                        return;
+                    }
+                    setUser(data);
+                })
+                .catch((error) => {
+                    dispatch({ type: 'CLEAR_AUTH_KEY' });
+                    console.log(error);
+                })
+                .finally(() => {
+                    setAuthConfirmationInProgress(false);
+                });
             return;
         }
-
-        const verifyPermissions = async () => {
-            console.log(`Bearer ${authKey}`);
-            const response = await fetch('http://localhost:5000/user/haspermission?permission=items.see', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${authKey}`,
-                },
-            });
-            const hasAccess = await response.json();
-            if (!hasAccess) {
-                setAuthKey(null);
-                setError('You do not have permission to access this page');
-            }
-            setAuthConfirmationInProgress(false);
-        };
-        verifyPermissions();
+        setAuthConfirmationInProgress(false);
     }, [authKey]);
 
     if (isAuthConfirmationInProgress) return <Container>Authenticating...</Container>;
-
-    if (!authKey && !isAuthConfirmationInProgress)
+    if (!user && !isAuthConfirmationInProgress)
         return (
-            <>
-                {error.length > 0 && (
-                    <Alert severity="error">
-                        {error}
-                        <br />
-                        Please login to continue
-                    </Alert>
-                )}
-                <GoogleLogin
-                    onSuccess={(credentialResponse) => {
-                        console.log(credentialResponse);
-                        localStorage.setItem('authKey', credentialResponse.credential);
-                        setAuthKey(credentialResponse.credential);
-                        setAuthConfirmationInProgress(false);
-                        setError('');
-                    }}
-                    onError={() => {
-                        console.log('Login Failed');
-                    }}
-                />
-            </>
+            <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                    console.log(credentialResponse);
+                    setUser(credentialResponse);
+                    dispatch({ type: 'SET_AUTH_TOKEN', payload: { authKey: credentialResponse.credential } });
+                    setAuthConfirmationInProgress(false);
+                }}
+                onError={() => {
+                    console.log('Login Failed');
+                }}
+            />
         );
 
     return (
         <Container>
-            {error.length > 0 && <Alert severity="error">{error}</Alert>}
             <h1>Admin Landing Page</h1>
-            <Button
-                onClick={() => {
-                    localStorage.removeItem('authKey');
-                    setAuthKey(null);
-                }}
-            >
-                Logout
-            </Button>
+            <Button onClick={() => setUser(null)}>Logout</Button>
         </Container>
     );
 }
