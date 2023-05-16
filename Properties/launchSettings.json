@@ -11,9 +11,7 @@
     "Kankoreziai": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "GOOGLE_CLIENT_ID": "847584482389-1dt7f1iq1t1q9eapliede1r05s3r96qd.apps.googleusercontent.com",
-        "GOOGLE_CLIENT_SECRET": "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"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "hotReloadEnabled": false,
       "applicationUrl": "http://localhost:5000",
@@ -23,7 +21,7 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
