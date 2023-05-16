@@ -43,9 +43,15 @@ namespace Kankoreziai.Middleware
 
             try
             {
-                RestResponse response = await client.ExecuteAsync(request);
+                RestResponse response = await client.ExecuteAsync(request); 
 
                 if(response.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    context.Response.StatusCode = 401;
+                    return;
+                }
+
+                if (response.Content == null)
                 {
                     context.Response.StatusCode = 401;
                     return;
