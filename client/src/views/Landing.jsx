@@ -4,7 +4,7 @@ import { Button, Container, Grid, Typography } from '@mui/material';
 import ItemCard from '../components/ItemCard';
 
 const Landing = () => {
-    const [flowerProducts, setFlowerProducts] = useState([]);
+    const [products, setProducts] = useState([]);
     useEffect(() => {
         fetch('http://localhost:5000/flower')
             .then((response) => {
@@ -14,7 +14,7 @@ const Landing = () => {
                 throw response;
             })
             .then((data) => {
-                setFlowerProducts(data);
+                setProducts(data);
             });
     }, []);
 
@@ -43,10 +43,10 @@ const Landing = () => {
                         Shop now
                     </Button>
                 </Grid>
-                {flowerProducts.map((flowerProduct) => {
+                {products.map((product) => {
                     return (
-                        <Grid key={flowerProduct.id} item xs={4}>
-                            <ItemCard product={flowerProduct} />
+                        <Grid key={product.id} item xs={4}>
+                            <ItemCard product={product} />
                         </Grid>
                     );
                 })}
