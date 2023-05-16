@@ -32,7 +32,7 @@ public class KankoreziaiDbContext : DbContext
     public void InitializeData()
     {
         Flowers.AddRange(new List<Flower>() { new (Guid.NewGuid(), "Rose", new Price(501)), new (Guid.NewGuid(), "Daisy", new Price(105)) });
-        Users.AddRange(new List<User>() { new() { Email = "testadmin@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
+        Users.AddRange(new List<User>() { new() { Email = "testemail@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
         SaveChanges();
     }
 }
