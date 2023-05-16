@@ -18,11 +18,12 @@ namespace Kankoreziai.Controllers
             _userService = userService;
         }
 
+        [HttpGet]
         [ActionName("haspermission")]
         [GoogleAuthentication]
         public async Task<ActionResult<bool>> HasPermission([FromQuery] string permission)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
             if(userEmail == null)
             {
                 return BadRequest();
