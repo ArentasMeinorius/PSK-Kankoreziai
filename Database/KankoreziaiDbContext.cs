@@ -25,7 +25,7 @@ public class KankoreziaiDbContext : DbContext
             .Property(u => u.Permissions)
             .HasConversion(
                 permissions => string.Join(',', permissions),
-                value => value.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+                value => value.Split(',', StringSplitOptions.None).ToList()
             );
     }
 
