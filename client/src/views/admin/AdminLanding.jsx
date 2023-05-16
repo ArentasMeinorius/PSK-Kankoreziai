@@ -22,7 +22,6 @@ export default function AdminLanding() {
         }
 
         const verifyPermissions = async () => {
-            console.log(`Bearer ${authKey}`);
             const response = await fetch('http://localhost:5000/user/haspermission?permission=items.see', {
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,13 +52,13 @@ export default function AdminLanding() {
                 )}
                 <GoogleLogin
                     onSuccess={(credentialResponse) => {
-                        console.log(credentialResponse);
                         localStorage.setItem('authKey', credentialResponse.credential);
                         setAuthKey(credentialResponse.credential);
                         setAuthConfirmationInProgress(false);
                         setError('');
                     }}
                     onError={() => {
+                        setError('Login Failed');
                         console.log('Login Failed');
                     }}
                 />
