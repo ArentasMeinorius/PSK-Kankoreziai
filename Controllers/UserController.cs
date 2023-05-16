@@ -28,7 +28,7 @@ namespace Kankoreziai.Controllers
             {
                 return BadRequest();
             }
-            return await _userService.HasPermission(userEmail, permission);
+            return await _userService.HasPermissionAsync(userEmail, permission);
         }
     }
 }

@@ -4,9 +4,9 @@ namespace Kankoreziai.Services.Users
 {
     public interface IUserService
     {
-        public Task<User?> GetUser(int id);
-        public Task<User?> GetUser(string email);
-        public bool HasPermission(User user, string permission);
-        public Task<bool> HasPermission(string email, string permission);
+        ValueTask<User?> GetUserAsync(int id);
+        Task<User?> GetUserAsync(string email);
+        bool HasPermission(User user, string permission);
+        Task<bool> HasPermissionAsync(string email, string permission);
     }
 }

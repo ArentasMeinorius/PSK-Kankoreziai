@@ -12,14 +12,14 @@ namespace Kankoreziai.Services.Users
             _context = kankoreziaiDbContext;
         }
 
-        public async Task<User?> GetUser(int id)
+        public ValueTask<User?> GetUserAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return _context.Users.FindAsync(id);
         }
 
-        public async Task<User?> GetUser(string email)
+        public Task<User?> GetUserAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+            return _context.Users.FirstOrDefaultAsync(user => user.Email == email);
         }
 
         public bool HasPermission(User user, string permission)
@@ -27,9 +27,9 @@ namespace Kankoreziai.Services.Users
             return user.Permissions.Contains(permission);
         }
 
-        public async Task<bool> HasPermission(string email, string permission)
+        public async Task<bool> HasPermissionAsync(string email, string permission)
         {
-            var user = await GetUser(email);
+            var user = await GetUserAsync(email);
             if (user == null)
             {
                 return false;
