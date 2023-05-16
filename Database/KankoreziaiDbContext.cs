@@ -10,6 +10,8 @@ public class KankoreziaiDbContext : DbContext
 
     public DbSet<Flower> Flowers { get; set; }
 
+    public DbSet<User> Users { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Flower>()
@@ -18,11 +20,19 @@ public class KankoreziaiDbContext : DbContext
                 price => price.Cents,
                 value => new Price(value)
             );
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.Permissions)
+            .HasConversion(
+                permissions => string.Join(',', permissions),
+                value => value.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+            );
     }
 
     public void InitializeData()
     {
         Flowers.AddRange(new List<Flower>() { new (Guid.NewGuid(), "Rose", new Price(501)), new (Guid.NewGuid(), "Daisy", new Price(105)) });
+        Users.AddRange(new List<User>() { new() { Email = "testadmin@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
         SaveChanges();
     }
 }
