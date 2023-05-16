@@ -2,7 +2,7 @@
 using Kankoreziai.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kankoreziai.Services
+namespace Kankoreziai.Services.Users
 {
     public class UserService : IUserService
     {

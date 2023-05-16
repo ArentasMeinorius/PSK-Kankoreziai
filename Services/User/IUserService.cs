@@ -1,6 +1,6 @@
 ﻿using Kankoreziai.Models;
 
-namespace Kankoreziai.Services
+namespace Kankoreziai.Services.Users
 {
     public interface IUserService
     {
