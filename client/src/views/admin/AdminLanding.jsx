@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 import { Alert, Button, Container } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
@@ -81,3 +82,4 @@ export default function AdminLanding() {
         </Container>
     );
 }
+*/

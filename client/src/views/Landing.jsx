@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Button, Container, Grid, Typography } from '@mui/material';
 import ItemCard from '../components/ItemCard';
 
 const Landing = () => {
+    const [flowerProducts, setFlowerProducts] = useState([]);
+    useEffect(() => {
+        fetch('http://localhost:5000/flower')
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw response;
+            })
+            .then((data) => {
+                setFlowerProducts(data);
+            });
+    }, []);
+
     return (
         <div>
             <Container
@@ -29,12 +43,13 @@ const Landing = () => {
                         Shop now
                     </Button>
                 </Grid>
-                <Grid item xs={4}>
-                    <ItemCard />
-                </Grid>
-                <Grid item xs={4}>
-                    <ItemCard />
-                </Grid>
+                {flowerProducts.map((flowerProduct) => {
+                    return (
+                        <Grid key={flowerProduct.id} item xs={4}>
+                            <ItemCard product={flowerProduct} />
+                        </Grid>
+                    );
+                })}
             </Grid>
         </div>
     );
