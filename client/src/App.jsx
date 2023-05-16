@@ -9,7 +9,7 @@ function App() {
             <Router>
                 <Routes>
                     <Route path="/" element={<Landing />} />
-                    <Route path="/Item" element={<ItemPage />} />
+                    <Route path="/item/:id" element={<ItemPage />} />
                 </Routes>
             </Router>
         </>
