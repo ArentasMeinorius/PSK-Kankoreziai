@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import { Box, Link, Typography } from '@mui/material';
 
 const ItemCard = ({ product }) => {
-    //const pricePlaceholder = '10 $';
-    console.log(product.name);
     const getMoneyFromCents = (cents) => {
         return cents / 100;
     };
