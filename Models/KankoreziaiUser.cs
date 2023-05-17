@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Numerics;
 
 namespace Kankoreziai.Models
 {
-    public record User
+    public record KankoreziaiUser
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,12 +1,12 @@
 ﻿using Kankoreziai.Models;
 
-namespace Kankoreziai.Services.Users
+namespace Kankoreziai.Services.User
 {
     public interface IUserService
     {
-        ValueTask<User?> GetUserAsync(int id);
-        Task<User?> GetUserAsync(string email);
-        bool HasPermission(User user, string permission);
+        ValueTask<KankoreziaiUser?> GetUserAsync(int id);
+        Task<KankoreziaiUser?> GetUserAsync(string email);
+        bool HasPermission(KankoreziaiUser kankoreziaiUser, string permission);
         Task<bool> HasPermissionAsync(string email, string permission);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Kankoreziai.Attributes.Authentication;
 using Kankoreziai.Database;
-using Kankoreziai.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Kankoreziai.Services.User;
 
 namespace Kankoreziai.Controllers
 {

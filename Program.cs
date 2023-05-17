@@ -1,6 +1,6 @@
 using Kankoreziai.Database;
 using Kankoreziai.Middleware;
-using Kankoreziai.Services.Users;
+using Kankoreziai.Services.User;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
