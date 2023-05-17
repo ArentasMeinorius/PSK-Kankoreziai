@@ -37,6 +37,7 @@ public class KankoreziaiDbContext : DbContext
             .HasConversion(
                 quantity => quantity.Units,
                 quantity => new Quantity(quantity)
+            );
         modelBuilder.Entity<User>()
             .Property(u => u.Permissions)
             .HasConversion(
