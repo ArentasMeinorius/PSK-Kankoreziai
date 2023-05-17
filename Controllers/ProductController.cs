@@ -44,7 +44,13 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post(ProductDto newEntity)
     {
-        var newFlower = new Product(Guid.NewGuid(), newEntity.Name, newEntity.Price);
+        var newFlower = new Product(
+            Guid.NewGuid(),
+            newEntity.Name,
+            newEntity.Price,
+            newEntity.Description,
+            newEntity.Pictures,
+            newEntity.Quantity);
         _context.Products.Add(newFlower);
         await _context.SaveChangesAsync();
         return Ok(newFlower);
