@@ -8,11 +8,11 @@ public class KankoreziaiDbContext : DbContext
     public KankoreziaiDbContext(DbContextOptions<KankoreziaiDbContext> options)
         : base(options) { }
 
-    public DbSet<Flower> Flowers { get; set; }
+    public DbSet<Product> Products { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Flower>()
+        modelBuilder.Entity<Product>()
             .Property(f => f.Price)
             .HasConversion(
                 price => price.Cents,
@@ -22,7 +22,7 @@ public class KankoreziaiDbContext : DbContext
 
     public void InitializeData()
     {
-        Flowers.AddRange(new List<Flower>() { new (Guid.NewGuid(), "Rose", new Price(501)), new (Guid.NewGuid(), "Daisy", new Price(105)) });
+        Products.AddRange(new List<Product>() { new (Guid.NewGuid(), "Rose", new Price(501)), new (Guid.NewGuid(), "Daisy", new Price(105)) });
         SaveChanges();
     }
 }
