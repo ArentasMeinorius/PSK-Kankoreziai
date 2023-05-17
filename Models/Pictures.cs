@@ -1,3 +1,3 @@
 ﻿namespace Kankoreziai.Models;
 
-public record Pictures(string ThumbnailLink, List<string> ShowcaseLinks);
+public record Pictures(List<string> Links);

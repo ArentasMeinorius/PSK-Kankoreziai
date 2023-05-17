@@ -19,6 +19,12 @@ public class KankoreziaiDbContext : DbContext
                 value => new Price(value)
             );
         modelBuilder.Entity<Product>()
+            .Property(p => p.Thumbnail)
+            .HasConversion(
+                thumbnail => thumbnail.Link,
+                thumbnail => new Thumbnail(thumbnail)
+            );
+        modelBuilder.Entity<Product>()
             .Property(p => p.Pictures)
             .HasConversion(
                 pictures => FormatPictures(pictures),
@@ -39,18 +45,16 @@ public class KankoreziaiDbContext : DbContext
             "Rose",
             new Price(501),
             "Very flower",
-            new Pictures(
-                "a",
-                new List<string> { "b", "c" }),
+            new Thumbnail("a"),
+            new Pictures(new List<string> { "b", "c" }),
             new Quantity(5));
         var product2 = new Product(
             Guid.NewGuid(),
             "Daisy",
             new Price(105),
             "Much wow",
-            new Pictures(
-                "d",
-                new List<string> { "e", "f" }),
+            new Thumbnail("d"),
+            new Pictures(new List<string> { "e", "f" }),
             new Quantity(12));
         Products.AddRange(new List<Product>() { product1, product2 });
         SaveChanges();
@@ -58,12 +62,11 @@ public class KankoreziaiDbContext : DbContext
 
     private static string FormatPictures(Pictures pictures)
     {
-        return string.Join(',', pictures.ThumbnailLink, pictures.ShowcaseLinks);
+        return string.Join(',', pictures.Links);
     }
 
     private static Pictures ParsePictures(string pictures)
     {
-        var parts = pictures.Split(',');
-        return new Pictures(parts[0], parts.Skip(1).ToList());
+        return new Pictures(pictures.Split(',').ToList());
     }
 }

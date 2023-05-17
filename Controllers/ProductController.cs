@@ -49,6 +49,7 @@ public class ProductController : ControllerBase
             newEntity.Name,
             newEntity.Price,
             newEntity.Description,
+            newEntity.Thumbnail,
             newEntity.Pictures,
             newEntity.Quantity);
         _context.Products.Add(newFlower);
