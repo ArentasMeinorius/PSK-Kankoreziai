@@ -10,6 +10,8 @@ public class KankoreziaiDbContext : DbContext
 
     public DbSet<Product> Products { get; set; }
 
+    public DbSet<User> Users { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Product>()
@@ -35,13 +37,18 @@ public class KankoreziaiDbContext : DbContext
             .HasConversion(
                 quantity => quantity.Units,
                 quantity => new Quantity(quantity)
+        modelBuilder.Entity<User>()
+            .Property(u => u.Permissions)
+            .HasConversion(
+                permissions => string.Join(',', permissions),
+                value => value.Split(',', StringSplitOptions.None).ToList()
             );
     }
 
     public void InitializeData()
     {
         var product1 = new Product(
-            Guid.NewGuid(), 
+            Guid.NewGuid(),
             "Rose",
             new Price(501),
             "Very flower",
@@ -57,6 +64,7 @@ public class KankoreziaiDbContext : DbContext
             new Pictures(new List<string> { "e", "f" }),
             new Quantity(12));
         Products.AddRange(new List<Product>() { product1, product2 });
+        Users.AddRange(new List<User>() { new() { Email = "testemail@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
         SaveChanges();
     }
 
