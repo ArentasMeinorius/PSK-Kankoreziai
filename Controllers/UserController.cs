@@ -2,7 +2,7 @@
 using Kankoreziai.Database;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Kankoreziai.Services.User;
+using Kankoreziai.Services.Users;
 
 namespace Kankoreziai.Controllers
 {

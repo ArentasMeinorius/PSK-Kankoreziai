@@ -2,7 +2,7 @@
 using Kankoreziai.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kankoreziai.Services.User
+namespace Kankoreziai.Services.Users
 {
     public class UserService : IUserService
     {
@@ -12,19 +12,19 @@ namespace Kankoreziai.Services.User
             _context = kankoreziaiDbContext;
         }
 
-        public ValueTask<KankoreziaiUser?> GetUserAsync(int id)
+        public ValueTask<User?> GetUserAsync(int id)
         {
             return _context.Users.FindAsync(id);
         }
 
-        public Task<KankoreziaiUser?> GetUserAsync(string email)
+        public Task<User?> GetUserAsync(string email)
         {
             return _context.Users.FirstOrDefaultAsync(user => user.Email == email);
         }
 
-        public bool HasPermission(KankoreziaiUser kankoreziaiUser, string permission)
+        public bool HasPermission(User user, string permission)
         {
-            return kankoreziaiUser.Permissions.Contains(permission);
+            return user.Permissions.Contains(permission);
         }
 
         public async Task<bool> HasPermissionAsync(string email, string permission)

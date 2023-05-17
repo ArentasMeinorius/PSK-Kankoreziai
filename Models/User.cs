@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Kankoreziai.Models
 {
-    public record KankoreziaiUser
+    public record User
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
