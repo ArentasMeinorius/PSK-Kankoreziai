@@ -1,3 +1,3 @@
 ﻿namespace Kankoreziai.Models;
 
-public record OrderDto(List<Product> Products, DateTime UpdatedAt, DateTime CreatedAt);
+//public record OrderDto(List<InventoryChange> Transactions, DateTime UpdatedAt, DateTime CreatedAt);

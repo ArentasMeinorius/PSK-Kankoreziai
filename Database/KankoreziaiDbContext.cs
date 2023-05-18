@@ -10,6 +10,7 @@ public class KankoreziaiDbContext : DbContext
 
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<InventoryChange> InventoryChanges { get; set; }
 
     public DbSet<User> Users { get; set; }
 
@@ -45,6 +46,8 @@ public class KankoreziaiDbContext : DbContext
                 permissions => string.Join(',', permissions),
                 value => value.Split(',', StringSplitOptions.None).ToList()
             );
+        modelBuilder.Entity<InventoryChange>()
+            .HasNoKey();
     }
 
     public void InitializeData()
@@ -69,14 +72,13 @@ public class KankoreziaiDbContext : DbContext
             ProductCategory.Flower);
 
 
-        var order1 = new Order(Guid.NewGuid(), new List<OrderProduct> { }, DateTime.UtcNow, DateTime.UtcNow);
-        var order2 = new Order(Guid.NewGuid(), new List<OrderProduct> { }, DateTime.UtcNow, DateTime.MinValue);
-        var order3 = new Order(Guid.NewGuid(), new List<OrderProduct> { }, DateTime.UtcNow, DateTime.UtcNow);
-        //order1.Flowers.AddRange(new List<OrderFlower>() { new(Guid.NewGuid(), order1, flower1) });
+        var order1 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.UtcNow);
+        var order2 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.MinValue);
+        var order3 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.UtcNow);
+        order1.InventoryChanges.AddRange(new List<InventoryChange>() { new(order1.Id, product1.Id, new Quantity(3)) });
         //order2.Flowers.AddRange(new List<OrderFlower>() { new(Guid.NewGuid(), order2, flower2) });
         // add repositories for items, Orders.include(flowers)
         Orders.AddRange(new List<Order>() { order1, order2, order3 });
-
 
         Products.AddRange(new List<Product>() { product1, product2 });
         Users.AddRange(new List<User>() { new() { Email = "testemail@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
