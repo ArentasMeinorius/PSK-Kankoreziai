@@ -48,13 +48,13 @@ public class KankoreziaiDbContext : DbContext
             );
 
         modelBuilder.Entity<InventoryChange>()
-            .Property(p => p.Quantity)
+            .Property(ic => ic.Quantity)
             .HasConversion(
                 quantity => quantity.Units,
                 quantity => new Quantity(quantity)
             );
-        //modelBuilder.Entity<InventoryChange>()
-         //   .Ignore(ic => ic.Order);
+        /*modelBuilder.Entity<InventoryChange>()
+            .Ignore(ic => ic.Order); */
     }
 
     public void InitializeData()
@@ -86,7 +86,7 @@ public class KankoreziaiDbContext : DbContext
         // add repositories for items, Orders.include(flowers)
         Orders.AddRange(new List<Order>() { order1, order2, order3 });
         Products.AddRange(new List<Product>() { product1, product2 });
-        order1.InventoryChanges.AddRange(new List<InventoryChange>() { new(Guid.NewGuid(), order1, product1, new Quantity(3)) });
+        order1.InventoryChanges.AddRange(new List<InventoryChange>() { new(Guid.NewGuid(), order1.Id, product1, new Quantity(3)) });
         Users.AddRange(new List<User>() { new() { Email = "testemail@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
         SaveChanges();
     }
