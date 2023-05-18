@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kankoreziai.Database;
 using Kankoreziai.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Kankoreziai.Controllers;
@@ -21,7 +22,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetAll()
     {
-        return Ok(_context.Orders.ToList());
+        return Ok(_context.Orders.Include(x => x.InventoryChanges).ToList());
     }
 
 

@@ -24,16 +24,18 @@ public record Order
 
 public class InventoryChange
 {
-    public Guid OrderId { get; set; }
-    public Guid ProductId { get; set; }
+    public Guid Id { get; set; }
+    public Order OrderId { get; set; }
+    public Product ProductId { get; set; }
     public Quantity Quantity { get; set; }
 
     public InventoryChange()
     {
     }
 
-    public InventoryChange(Guid orderId, Guid productId, Quantity quantity)
+    public InventoryChange(Guid id, Order orderId, Product productId, Quantity quantity)
     {
+        Id = Id;
         OrderId = orderId;
         ProductId = productId;
         Quantity = quantity;
