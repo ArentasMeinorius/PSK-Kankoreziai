@@ -22,7 +22,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetAll()
     {
-        return Ok(_context.Orders.Include(x => x.InventoryChanges).ToList());
+        return Ok(_context.Orders.Include(x => x.InventoryChanges).ThenInclude(y => y.ProductId).ToList());
     }
 
 

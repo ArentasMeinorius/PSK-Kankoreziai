@@ -82,11 +82,10 @@ public class KankoreziaiDbContext : DbContext
         var order1 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.UtcNow);
         var order2 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.MinValue);
         var order3 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.UtcNow);
-        //order2.Flowers.AddRange(new List<OrderFlower>() { new(Guid.NewGuid(), order2, flower2) });
-        // add repositories for items, Orders.include(flowers)
+        order1.InventoryChanges.AddRange(new List<InventoryChange>() { new(Guid.NewGuid(), order1.Id, product1, new Quantity(3)) });
+        order2.InventoryChanges.AddRange(new List<InventoryChange>() { new(Guid.NewGuid(), order2.Id, product1, new Quantity(5)), new(Guid.NewGuid(), order2.Id, product2, new Quantity(5)) });
         Orders.AddRange(new List<Order>() { order1, order2, order3 });
         Products.AddRange(new List<Product>() { product1, product2 });
-        order1.InventoryChanges.AddRange(new List<InventoryChange>() { new(Guid.NewGuid(), order1.Id, product1, new Quantity(3)) });
         Users.AddRange(new List<User>() { new() { Email = "testemail@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
         SaveChanges();
     }
