@@ -77,9 +77,9 @@ public class KankoreziaiDbContext : DbContext
             ProductCategory.Flower);
 
 
-        var order1 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.UtcNow);
-        var order2 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.MinValue);
-        var order3 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, DateTime.UtcNow, DateTime.UtcNow);
+        var order1 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, OrderStatus.Cart, DateTime.UtcNow, DateTime.UtcNow);
+        var order2 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, OrderStatus.AwaitingPayment, DateTime.UtcNow, DateTime.MinValue);
+        var order3 = new Order(Guid.NewGuid(), new List<InventoryChange> { }, OrderStatus.Cart, DateTime.UtcNow, DateTime.UtcNow);
         order1.InventoryChanges.AddRange(new List<InventoryChange>() { new(Guid.NewGuid(), order1.Id, product1, new Quantity(3)) });
         order2.InventoryChanges.AddRange(new List<InventoryChange>() { new(Guid.NewGuid(), order2.Id, product1, new Quantity(5)), new(Guid.NewGuid(), order2.Id, product2, new Quantity(5)) });
         Orders.AddRange(new List<Order>() { order1, order2, order3 });

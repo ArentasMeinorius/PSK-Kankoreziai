@@ -117,6 +117,7 @@ public class OrderController : ControllerBase
         return new Order(
             orderId.Value,
             inventoryChanges.ToList(),
+            newEntity.OrderStatus,
             DateTime.UtcNow,
             DateTime.UtcNow);
     }
