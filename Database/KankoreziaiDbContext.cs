@@ -53,8 +53,6 @@ public class KankoreziaiDbContext : DbContext
                 quantity => quantity.Units,
                 quantity => new Quantity(quantity)
             );
-        /*modelBuilder.Entity<InventoryChange>()
-            .Ignore(ic => ic.Order); */
     }
 
     public void InitializeData()
