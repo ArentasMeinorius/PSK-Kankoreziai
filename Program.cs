@@ -1,7 +1,9 @@
 using Kankoreziai.Database;
 using Kankoreziai.Middleware;
+using Kankoreziai.Models;
 using Kankoreziai.Services.Users;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +20,7 @@ services.AddScoped<IUserService, UserService>();
 
 services.AddControllersWithViews();
 services.AddSwaggerGen(options =>
-{
+{ 
     options.EnableAnnotations();
 });
 

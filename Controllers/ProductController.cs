@@ -51,7 +51,8 @@ public class ProductController : ControllerBase
             newEntity.Description,
             newEntity.Thumbnail,
             newEntity.Pictures,
-            newEntity.Quantity);
+            newEntity.Quantity,
+            newEntity.Category);
         _context.Products.Add(newFlower);
         await _context.SaveChangesAsync();
         return Ok(newFlower);

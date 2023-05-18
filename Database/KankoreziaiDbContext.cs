@@ -55,7 +55,8 @@ public class KankoreziaiDbContext : DbContext
             "Very flower",
             new Thumbnail("a"),
             new Pictures(new List<string> { "b", "c" }),
-            new Quantity(5));
+            new Quantity(5),
+            ProductCategory.Flower);
         var product2 = new Product(
             Guid.NewGuid(),
             "Daisy",
@@ -63,7 +64,8 @@ public class KankoreziaiDbContext : DbContext
             "Much wow",
             new Thumbnail("d"),
             new Pictures(new List<string> { "e", "f" }),
-            new Quantity(12));
+            new Quantity(12),
+            ProductCategory.Flower);
         Products.AddRange(new List<Product>() { product1, product2 });
         Users.AddRange(new List<User>() { new() { Email = "testemail@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
         SaveChanges();
