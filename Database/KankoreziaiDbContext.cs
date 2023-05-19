@@ -9,6 +9,8 @@ public class KankoreziaiDbContext : DbContext
         : base(options) { }
 
     public DbSet<Product> Products { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderProduct> OrderProducts { get; set; }
 
     public DbSet<User> Users { get; set; }
 
@@ -44,6 +46,13 @@ public class KankoreziaiDbContext : DbContext
                 permissions => string.Join(',', permissions),
                 value => value.Split(',', StringSplitOptions.None).ToList()
             );
+
+        modelBuilder.Entity<OrderProduct>()
+            .Property(op => op.Quantity)
+            .HasConversion(
+                quantity => quantity.Units,
+                quantity => new Quantity(quantity)
+            );
     }
 
     public void InitializeData()
@@ -66,6 +75,14 @@ public class KankoreziaiDbContext : DbContext
             new Pictures(new List<string> { "e", "f" }),
             new Quantity(12),
             ProductCategory.Flower);
+
+
+        var order1 = new Order(Guid.NewGuid(), new List<OrderProduct> { }, OrderStatus.PaymentAccepted, DateTime.UtcNow, DateTime.UtcNow);
+        var order2 = new Order(Guid.NewGuid(), new List<OrderProduct> { }, OrderStatus.AwaitingPayment, DateTime.UtcNow, DateTime.MinValue);
+        var order3 = new Order(Guid.NewGuid(), new List<OrderProduct> { }, OrderStatus.PaymentRejected, DateTime.UtcNow, DateTime.UtcNow);
+        order1.OrderProducts.AddRange(new List<OrderProduct>() { new(Guid.NewGuid(), order1.Id, product1, new Quantity(3)) });
+        order2.OrderProducts.AddRange(new List<OrderProduct>() { new(Guid.NewGuid(), order2.Id, product1, new Quantity(5)), new(Guid.NewGuid(), order2.Id, product2, new Quantity(5)) });
+        Orders.AddRange(new List<Order>() { order1, order2, order3 });
         Products.AddRange(new List<Product>() { product1, product2 });
         Users.AddRange(new List<User>() { new() { Email = "testemail@gmail.com", Permissions = new(new[] { "items.see", "items.manage" }) } });
         SaveChanges();
