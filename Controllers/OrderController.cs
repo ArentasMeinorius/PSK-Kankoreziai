@@ -22,7 +22,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetAll()
     {
-        return Ok(_context.Orders.Include(x => x.InventoryChanges).ThenInclude(y => y.Product).ToList());
+        return Ok(_context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).ToList());
     }
 
 
@@ -32,7 +32,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var order = await _context.Orders.Include(x => x.InventoryChanges).ThenInclude(y => y.Product).FirstOrDefaultAsync(order => order.Id == id);
+        var order = await _context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).FirstOrDefaultAsync(order => order.Id == id);
         if (order == null)
         {
             return StatusCode(404);
@@ -52,7 +52,7 @@ public class OrderController : ControllerBase
         }
 
         _context.Orders.Add(order);
-        _context.InventoryChanges.AddRange(order.InventoryChanges);
+        _context.OrderProducts.AddRange(order.OrderProducts);
         await _context.SaveChangesAsync();
         return Ok(order);
     }
@@ -76,9 +76,9 @@ public class OrderController : ControllerBase
         }
 
         _context.Orders.Remove(oldOrder);
-        _context.InventoryChanges.RemoveRange(oldOrder.InventoryChanges);
+        _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
         _context.Orders.Add(order);
-        _context.InventoryChanges.AddRange(order.InventoryChanges);
+        _context.OrderProducts.AddRange(order.OrderProducts);
         await _context.SaveChangesAsync();
         return Ok(order);
     }
@@ -94,7 +94,7 @@ public class OrderController : ControllerBase
             return Ok(id);
         }
         _context.Orders.Remove(oldOrder);
-        _context.InventoryChanges.RemoveRange(oldOrder.InventoryChanges);
+        _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
         await _context.SaveChangesAsync();
         return Ok(id);
     }
@@ -111,12 +111,12 @@ public class OrderController : ControllerBase
 
         orderId ??= Guid.NewGuid();
 
-        var inventoryChanges = newEntity.ItemsInOrder.Select(x =>
-            new InventoryChange(Guid.NewGuid(), orderId.Value, products.Single(y => y.Id == x.ProductId), x.Quantity));
+        var orderProducts = newEntity.ItemsInOrder.Select(x =>
+            new OrderProduct(Guid.NewGuid(), orderId.Value, products.Single(y => y.Id == x.ProductId), x.Quantity));
 
         return new Order(
             orderId.Value,
-            inventoryChanges.ToList(),
+            orderProducts.ToList(),
             newEntity.OrderStatus,
             DateTime.UtcNow,
             DateTime.UtcNow);
