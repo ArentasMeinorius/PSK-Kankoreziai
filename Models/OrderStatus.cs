@@ -2,7 +2,6 @@
 
 public enum OrderStatus
 {
-    Cart,
     AwaitingPayment,
     PaymentAccepted,
     PaymentRejected,
