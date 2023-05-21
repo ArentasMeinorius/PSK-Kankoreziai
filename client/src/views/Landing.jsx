@@ -6,7 +6,7 @@ import ItemCard from '../components/ItemCard';
 const Landing = () => {
     const [products, setProducts] = useState([]);
     useEffect(() => {
-        fetch('http://localhost:5000/flower')
+        fetch('http://localhost:5000/product')
             .then((response) => {
                 if (response.ok) {
                     return response.json();
