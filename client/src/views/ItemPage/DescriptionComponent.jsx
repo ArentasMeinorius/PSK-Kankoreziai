@@ -1,8 +1,10 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Container, Typography } from '@mui/material';
+import { Button, Container, Typography, useTheme } from '@mui/material';
 
 const DescriptionComponent = ({ itemInfo }) => {
+    const theme = useTheme();
+
     const getMoneyFromCents = (cents) => {
         return cents / 100;
     };
@@ -11,7 +13,7 @@ const DescriptionComponent = ({ itemInfo }) => {
         return <Typography>Loading...</Typography>;
     } else {
         return (
-            <Container sx={{ backgroundColor: '#153E00', color: 'white', padding: 5 }}>
+            <Container sx={{ backgroundColor: theme.palette.primary.dark, color: 'white', padding: 5 }}>
                 <Typography variant="h4" noWrap={true}>
                     {itemInfo.name}
                 </Typography>
