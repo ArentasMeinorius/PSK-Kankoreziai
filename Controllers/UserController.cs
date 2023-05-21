@@ -1,8 +1,8 @@
 ﻿using Kankoreziai.Attributes.Authentication;
 using Kankoreziai.Database;
-using Kankoreziai.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Kankoreziai.Services.Users;
 
 namespace Kankoreziai.Controllers
 {
@@ -18,16 +18,17 @@ namespace Kankoreziai.Controllers
             _userService = userService;
         }
 
+        [HttpGet]
         [ActionName("haspermission")]
         [GoogleAuthentication]
         public async Task<ActionResult<bool>> HasPermission([FromQuery] string permission)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
             if(userEmail == null)
             {
                 return BadRequest();
             }
-            return await _userService.HasPermission(userEmail, permission);
+            return await _userService.HasPermissionAsync(userEmail, permission);
         }
     }
 }

@@ -8,16 +8,13 @@ export async function getCredentials(authKey) {
         }
         return response.json();
     });
-    console.log(result);
     return result;
 }
 
 export async function getAndVerifyLocalStorageCredentials() {
     const authKey = localStorage.getItem('authKey');
     const credentials = await getCredentials(authKey);
-    console.log('credentials: ', credentials);
     if (credentials == null) {
-        console.log('authKey invalid');
         localStorage.removeItem('authKey');
     }
     return credentials;
