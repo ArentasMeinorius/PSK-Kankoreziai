@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DescriptionComponent from './DescriptionComponent';
 import ImagesComponent from './ImagesComponent';
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 const ItemPage = () => {
@@ -9,7 +9,7 @@ const ItemPage = () => {
     let { id } = useParams();
 
     useEffect(() => {
-        fetch(`http://localhost:5000/item/${id}`)
+        fetch(`http://localhost:5000/product/${id}`)
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -17,19 +17,23 @@ const ItemPage = () => {
                 throw response;
             })
             .then((data) => {
-                setProductInfo({ data });
+                setProductInfo(data);
             });
-    }, []);
+    }, [id]);
 
-    return (
-        <Grid direction="row" container spacing={2}>
-            <Grid item xs={6}>
-                <ImagesComponent images={productInfo.pictures} />
+    if (productInfo) {
+        return (
+            <Grid direction="row" container spacing={0}>
+                <Grid item xs={6}>
+                    <ImagesComponent thumbnail={productInfo.thumbnail} images={productInfo.pictures} />
+                </Grid>
+                <Grid item xs={6}>
+                    <DescriptionComponent itemInfo={productInfo} />
+                </Grid>
             </Grid>
-            <Grid item xs={6}>
-                <DescriptionComponent description={productInfo} />
-            </Grid>
-        </Grid>
-    );
+        );
+    } else {
+        return <Typography>Loading...</Typography>;
+    }
 };
 export default ItemPage;

@@ -11,7 +11,7 @@ const ItemCard = ({ product }) => {
         <Link href={`/item/${product.id}`} variant="body1" underline="none">
             <Box
                 component="img"
-                src={product.pictures.thumbnail}
+                src={product.thumbnail.link}
                 sx={{
                     width: '85%',
                 }}
