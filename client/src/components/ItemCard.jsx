@@ -8,7 +8,7 @@ const ItemCard = ({ product }) => {
     };
 
     return (
-        <Link href={`/item/:${product.id}`} variant="body1" underline="none">
+        <Link href={`/item/${product.id}`} variant="body1" underline="none">
             <Box
                 component="img"
                 src={product.pictures.thumbnail}
