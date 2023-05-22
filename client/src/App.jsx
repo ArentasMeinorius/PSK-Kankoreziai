@@ -5,6 +5,8 @@ import ItemPage from './views/ItemPage/ItemPage';
 import AdminLanding from './views/admin/AdminLanding';
 import { green } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Navbar from './components/Navbar.jsx';
+import { Box } from '@mui/material';
 
 const theme = createTheme({
     palette: {
@@ -20,6 +22,8 @@ function App() {
         <>
             <ThemeProvider theme={theme}>
                 <Router>
+                    <Navbar />
+                    <Box mt={10} />
                     <Routes>
                         <Route path="/" element={<Landing />} />
                         <Route path="/item/:id" element={<ItemPage />} />
