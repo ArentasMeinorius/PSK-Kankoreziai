@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Container, Grid, Input, Typography } from '@mui/material';
-import { addToCart, getCart } from '../../cart/cartHandler';
+import { addToCart } from '../../cart/cartHandler';
 
 const DescriptionComponent = ({ itemInfo }) => {
     const [quantity, setQuantity] = React.useState(1);
@@ -11,8 +11,6 @@ const DescriptionComponent = ({ itemInfo }) => {
     };
 
     function addItemToCart(item, quantity) {
-        console.log('item: ', item);
-        console.log('Current cart', getCart());
         addToCart(item, quantity);
     }
 
