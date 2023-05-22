@@ -1,11 +1,20 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Container, Typography } from '@mui/material';
+import { Button, Container, Grid, Input, Typography } from '@mui/material';
+import { addToCart, getCart } from '../../cart/cartHandler';
 
 const DescriptionComponent = ({ itemInfo }) => {
+    const [quantity, setQuantity] = React.useState(1);
+
     const getMoneyFromCents = (cents) => {
         return cents / 100;
     };
+
+    function addItemToCart(item, quantity) {
+        console.log('item: ', item);
+        console.log('Current cart', getCart());
+        addToCart(item, quantity);
+    }
 
     if (!itemInfo) {
         return <Typography>Loading...</Typography>;
@@ -17,10 +26,23 @@ const DescriptionComponent = ({ itemInfo }) => {
                 </Typography>
                 <Typography variant="h6">Price: {getMoneyFromCents(itemInfo?.price?.cents)} €</Typography>
                 <Typography variant="body1">{itemInfo.description}</Typography>
-                <Typography variant="h6">Current quantity: {itemInfo?.quantity?.units}</Typography>
-                <Button variant="contained" sx={{ width: '70%', marginLeft: 'auto', marginRight: 'auto' }}>
-                    Add to cart
-                </Button>
+                <Typography variant="h6">In stock: {itemInfo?.quantity?.units}</Typography>
+                <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                        <Input
+                            variant="outlined"
+                            type="number"
+                            placeholder="Quantity"
+                            onChange={(event) => setQuantity(event.target.value)}
+                            value={quantity}
+                        />
+                    </Grid>
+                    <Grid item xs={8}>
+                        <Button variant="contained" fullWidth onClick={() => addItemToCart(itemInfo, quantity)}>
+                            Add to cart
+                        </Button>
+                    </Grid>
+                </Grid>
             </Container>
         );
     }
