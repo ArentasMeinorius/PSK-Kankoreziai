@@ -15,10 +15,10 @@ const DescriptionComponent = ({ itemInfo }) => {
         return (
             <Container sx={{ backgroundColor: theme.palette.primary.dark, color: 'white', padding: 5 }}>
                 <Typography variant="h4" noWrap={true}>
-                    {itemInfo.name}
+                    {itemInfo?.name}
                 </Typography>
                 <Typography variant="h6">Price: {getMoneyFromCents(itemInfo?.price?.cents)} €</Typography>
-                <Typography variant="body1">{itemInfo.description}</Typography>
+                <Typography variant="body1">{itemInfo?.description}</Typography>
                 <Typography variant="h6">Current quantity: {itemInfo?.quantity?.units}</Typography>
                 <Button variant="contained" sx={{ width: '70%', marginLeft: 'auto', marginRight: 'auto' }}>
                     Add to cart
