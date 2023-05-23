@@ -9,11 +9,11 @@ namespace Kankoreziai.Controllers;
 [Route("[controller]")]
 public class ProductController : ControllerBase
 {
-    private readonly KankoreziaiDbContext _context;
+    private readonly IProductsRepository _repository;
 
-    public ProductController(KankoreziaiDbContext context)
+    public ProductController(IProductsRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     [HttpGet]
@@ -21,7 +21,7 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetAll()
     {
-        return Ok(_context.Products.ToList());
+        return Ok(_repository.GetAll());
     }
 
 
@@ -31,12 +31,12 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var flower = await _context.Products.FindAsync(id);
-        if (flower == null)
+        var product = await _repository.Get(id);
+        if (product == null)
         {
             return StatusCode(404);
         }
-        return Ok(flower);
+        return Ok(product);
     }
 
     [HttpPost]
@@ -44,7 +44,7 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post(ProductDto newEntity)
     {
-        var newFlower = new Product(
+        var product = new Product(
             Guid.NewGuid(),
             newEntity.Name,
             newEntity.Price,
@@ -53,9 +53,8 @@ public class ProductController : ControllerBase
             newEntity.Pictures,
             newEntity.Quantity,
             newEntity.Category);
-        _context.Products.Add(newFlower);
-        await _context.SaveChangesAsync();
-        return Ok(newFlower);
+        var result = await _repository.Add(product);
+        return Ok(result);
     }
 
     [HttpPut("{id}")]
@@ -64,35 +63,34 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, ProductDto newEntity)
     {
-        var oldFlower = await _context.Products.FindAsync(id);
-        if (oldFlower == null)
+        var oldProduct = await _repository.Get(id);
+        if (oldProduct == null)
         {
             return StatusCode(404);
         }
-        var changedFlower = oldFlower with
+        var changedProduct = oldProduct with
         {
             Name = newEntity.Name,
             Price = newEntity.Price
         };
-        _context.Products.Remove(oldFlower);
-        _context.Products.Add(changedFlower);
-        await _context.SaveChangesAsync();
-        return Ok(changedFlower);
+        await _repository.Delete(changedProduct);
+        var result = _repository.Add(changedProduct);
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var oldFlower = await _context.Products.FindAsync(id);
-        if (oldFlower == null)
+        var product = await _repository.Get(id);
+        if (product == null)
         {
-            return Ok(id);
+            return StatusCode(404);
         }
-        _context.Products.Remove(oldFlower);
-        await _context.SaveChangesAsync();
-        return Ok(id);
+        var result = await _repository.Delete(product);
+        return Ok(result);
     }
 }
 

@@ -34,6 +34,7 @@ using (var context = new KankoreziaiDbContext(dbOptions))
     context.InitializeData();
 }
 
+services.AddScoped<IProductsRepository, ProductsRepository>();
 
 var app = builder.Build();
 
