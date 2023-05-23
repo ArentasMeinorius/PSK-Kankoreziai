@@ -10,11 +10,11 @@ namespace Kankoreziai.Controllers;
 [Route("[controller]")]
 public class OrderController : ControllerBase
 {
-    private readonly KankoreziaiDbContext _context;
+    private readonly IOrdersRepository _repository;
 
-    public OrderController(KankoreziaiDbContext context)
+    public OrderController(IOrdersRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     [HttpGet]
@@ -22,7 +22,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetAll()
     {
-        return Ok(_context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).ToList());
+        return Ok(_repository.GetAll());
     }
 
 
@@ -32,7 +32,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var order = await _context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).FirstOrDefaultAsync(order => order.Id == id);
+        var order = await _repository.Get(id); 
         if (order == null)
         {
             return StatusCode(404);
@@ -51,7 +51,7 @@ public class OrderController : ControllerBase
             return StatusCode(404);
         }
 
-        _context.Orders.Add(order);
+        _repository.Add(order);
         _context.OrderProducts.AddRange(order.OrderProducts);
         await _context.SaveChangesAsync();
         return Ok(order);
@@ -63,7 +63,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, OrderDto newEntity)
     {
-        var oldOrder = await _context.Orders.FindAsync(id);
+        var oldOrder = await _repository.FindAsync(id);
         if (oldOrder == null)
         {
             return StatusCode(404);
@@ -75,9 +75,9 @@ public class OrderController : ControllerBase
             return StatusCode(404);
         }
 
-        _context.Orders.Remove(oldOrder);
+        _repository.Remove(oldOrder);
         _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
-        _context.Orders.Add(order);
+        _repository.Add(order);
         _context.OrderProducts.AddRange(order.OrderProducts);
         await _context.SaveChangesAsync();
         return Ok(order);
@@ -88,12 +88,12 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var oldOrder = await _context.Orders.FindAsync(id);
+        var oldOrder = await _repository.FindAsync(id);
         if (oldOrder == null)
         {
             return Ok(id);
         }
-        _context.Orders.Remove(oldOrder);
+        _repository.Remove(oldOrder);
         _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
         await _context.SaveChangesAsync();
         return Ok(id);
