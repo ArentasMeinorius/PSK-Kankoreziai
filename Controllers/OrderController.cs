@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kankoreziai.Database;
 using Kankoreziai.Models;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace Kankoreziai.Controllers;
@@ -51,10 +50,8 @@ public class OrderController : ControllerBase
             return StatusCode(404);
         }
 
-        _repository.Add(order);
-        _context.OrderProducts.AddRange(order.OrderProducts);
-        await _context.SaveChangesAsync();
-        return Ok(order);
+        var result = await _repository.Add(order);
+        return Ok(result);
     }
 
     [HttpPut("{id}")]
@@ -63,7 +60,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, OrderDto newEntity)
     {
-        var oldOrder = await _repository.FindAsync(id);
+        var oldOrder = await _repository.Get(id);
         if (oldOrder == null)
         {
             return StatusCode(404);
@@ -75,12 +72,9 @@ public class OrderController : ControllerBase
             return StatusCode(404);
         }
 
-        _repository.Remove(oldOrder);
-        _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
-        _repository.Add(order);
-        _context.OrderProducts.AddRange(order.OrderProducts);
-        await _context.SaveChangesAsync();
-        return Ok(order);
+        await _repository.Delete(oldOrder);
+        var result = await _repository.Add(order);
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
@@ -88,15 +82,13 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var oldOrder = await _repository.FindAsync(id);
+        var oldOrder = await _repository.Get(id);
         if (oldOrder == null)
         {
             return Ok(id);
         }
-        _repository.Remove(oldOrder);
-        _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
-        await _context.SaveChangesAsync();
-        return Ok(id);
+        var result = await _repository.Delete(oldOrder);
+        return Ok(result);
     }
 
     private async Task<Order?> MakeOrder(OrderDto newEntity, Guid? orderId = null)

@@ -27,7 +27,7 @@ public class OrdersRepository : IOrdersRepository
     public async Task<Order> Add(Order entity)
     {
         await _context.Orders.AddAsync(entity);
-        await _productsRepository.Add(order.OrderProducts);
+        await _context.OrderProducts.AddRangeAsync(entity.OrderProducts);
         await _context.SaveChangesAsync();
         return entity;
     }
@@ -35,6 +35,7 @@ public class OrdersRepository : IOrdersRepository
     public async Task<Guid> Delete(Order entity)
     {
         _context.Orders.Remove(entity);
+        _context.OrderProducts.RemoveRange(entity.OrderProducts);
         await _context.SaveChangesAsync();
         return entity.Id;
     }

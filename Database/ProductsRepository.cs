@@ -28,11 +28,6 @@ public class ProductsRepository : IProductsRepository
         return entity;
     }
 
-    public Task Add(IList<Product> entities)
-    {
-        return _context.Products.AddRangeAsync(entities);
-    }
-
     public async Task<Guid> Delete(Product entity)
     {
         _context.Products.Remove(entity);
