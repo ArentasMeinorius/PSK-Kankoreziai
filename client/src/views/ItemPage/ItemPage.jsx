@@ -21,11 +21,11 @@ const ItemPage = () => {
             });
     }, [id]);
 
-    if (productInfo) {
+    if (productInfo && productInfo?.pictures) {
         return (
             <Grid direction="row" container spacing={0}>
                 <Grid item xs={6}>
-                    <ImagesComponent thumbnail={productInfo.thumbnail} images={productInfo.pictures} />
+                    <ImagesComponent images={[productInfo?.thumbnail?.link, ...productInfo.pictures.links]} />
                 </Grid>
                 <Grid item xs={6}>
                     <DescriptionComponent itemInfo={productInfo} />

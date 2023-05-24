@@ -1,9 +1,10 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-import { Button, Container, Grid, Input, Typography } from '@mui/material';
+import { Button, Container, Grid, Input, Typography, useTheme } from '@mui/material';
 import { addToCart } from '../../cart/cartHandler';
 
 const DescriptionComponent = ({ itemInfo }) => {
+    const theme = useTheme();
     const [quantity, setQuantity] = React.useState(1);
 
     const getMoneyFromCents = (cents) => {
@@ -18,9 +19,9 @@ const DescriptionComponent = ({ itemInfo }) => {
         return <Typography>Loading...</Typography>;
     } else {
         return (
-            <Container sx={{ backgroundColor: '#153E00', color: 'white', padding: 5 }}>
+            <Container sx={{ backgroundColor: theme.palette.primary.dark, color: 'white', padding: 5 }}>
                 <Typography variant="h4" noWrap={true}>
-                    {itemInfo.name}
+                    {itemInfo?.name}
                 </Typography>
                 <Typography variant="h6">Price: {getMoneyFromCents(itemInfo?.price?.cents)} €</Typography>
                 <Typography variant="body1">{itemInfo.description}</Typography>
