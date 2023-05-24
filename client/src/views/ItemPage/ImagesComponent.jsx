@@ -1,28 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Box, Container, Grid } from '@mui/material';
 
-const ImagesComponent = ({ thumbnail, images }) => {
-    const [mainImage, setMainImage] = useState(thumbnail?.link);
-    if (!!thumbnail && !!images) {
+const ImagesComponent = ({ images }) => {
+    const [mainImage, setMainImage] = useState('');
+
+    useEffect(() => {
+        setMainImage(images[0]);
+    }, [images]);
+    console.log('image: ', images);
+    if (images) {
         return (
-            <Container sx={{ padding: 5 }}>
-                <Box component="img" src={mainImage} sx={{ width: '100%' }}></Box>
+            <Container>
                 <Grid direction="row" container>
-                    <Grid item xs={3}>
-                        <Container
-                            onClick={() => setMainImage(thumbnail?.link)}
-                            sx={{
-                                backgroundImage: `url(${thumbnail?.link})`,
-                                backgroundSize: '100%',
-                                padding: 5,
-                            }}
-                        ></Container>
+                    <Grid item xs={12}>
+                        <Box component="img" src={mainImage} sx={{ height: '50vh', width: '50vh' }}></Box>
                     </Grid>
-                    {images?.links.map((image, index) => {
-                        console.log('image: ', image);
+                    {images.map((image, index) => {
                         return (
-                            <Grid key={index} item xs={3}>
+                            <Grid key={index} item xs={1}>
                                 <Container
                                     onClick={() => setMainImage(image)}
                                     sx={{
