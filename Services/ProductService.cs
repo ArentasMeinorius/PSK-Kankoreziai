@@ -13,7 +13,7 @@ public class ProductService : IProductService
         _repository = repository;
     }
 
-    public IList<Product> GetAll()
+    public Task<List<Product>> GetAll()
     {
         return _repository.GetAll();
     }

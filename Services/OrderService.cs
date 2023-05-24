@@ -38,10 +38,9 @@ public class OrderService : IOrderService
             DateTime.UtcNow);
     }
 
-    public IList<Order> GetAll()
+    public Task<List<Order>> GetAll()
     {
-        var result = _orderRepository.GetAll();
-        return result;
+        return _orderRepository.GetAll();
     }
 
     public Task<Result<Order>> Get(Guid id)

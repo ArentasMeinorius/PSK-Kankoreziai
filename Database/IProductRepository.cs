@@ -5,7 +5,7 @@ namespace Kankoreziai.Database;
 
 public interface IProductRepository
 {
-    IList<Product> GetAll();
+    Task<List<Product>> GetAll();
     Task<Result<Product>> Get(Guid id);
     Task<Product> Add(Product entity);
     Task<Result<Guid>> Delete(Guid id);

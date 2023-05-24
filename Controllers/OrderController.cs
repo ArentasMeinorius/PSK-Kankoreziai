@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kankoreziai.Models;
 using Kankoreziai.Services;
-using FluentResults;
 
 
 namespace Kankoreziai.Controllers;
@@ -20,9 +19,9 @@ public class OrderController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
     [Produces("application/json")]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(_service.GetAll());
+        return Ok(await _service.GetAll());
     }
 
 

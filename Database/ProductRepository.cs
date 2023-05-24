@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Kankoreziai.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kankoreziai.Database;
 
@@ -12,9 +13,9 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public IList<Product> GetAll()
+    public Task<List<Product>> GetAll()
     {
-        return _context.Products.ToList();
+        return _context.Products.ToListAsync();
     }
 
     public async Task<Result<Product>> Get(Guid id)

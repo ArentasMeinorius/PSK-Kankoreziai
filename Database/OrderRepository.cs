@@ -15,9 +15,9 @@ public class OrderRepository : IOrderRepository
         _productRepository = productRepository;
     }
 
-    public IList<Order> GetAll()
+    public Task<List<Order>> GetAll()
     {
-        return _context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).ToList();
+        return _context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).ToListAsync();
     }
 
     public async Task<Result<Order>> Get(Guid id)

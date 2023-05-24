@@ -5,7 +5,7 @@ namespace Kankoreziai.Database;
 
 public interface IOrderRepository
 {
-    IList<Order> GetAll();
+    Task<List<Order>> GetAll();
     Task<Result<Order>> Get(Guid id);
     Task<Order> Add(Order entity);
     Task<Result<Guid>> Delete(Guid id);

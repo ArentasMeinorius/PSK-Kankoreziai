@@ -19,9 +19,9 @@ public class ProductController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
     [Produces("application/json")]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(_service.GetAll());
+        return Ok(await _service.GetAll());
     }
 
 
