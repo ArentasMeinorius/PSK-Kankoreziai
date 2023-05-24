@@ -31,12 +31,12 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var product = await _repository.Get(id);
-        if (product == null)
+        var result = await _repository.Get(id);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-        return Ok(product);
+        return Ok(result);
     }
 
     [HttpPost]
@@ -63,17 +63,17 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, ProductDto newEntity)
     {
-        var oldProduct = await _repository.Get(id);
-        if (oldProduct == null)
+        var oldProductResult = await _repository.Get(id);
+        if (oldProductResult.IsFailed)
         {
             return StatusCode(404);
         }
-        var changedProduct = oldProduct with
+        var changedProduct = oldProductResult.Value with
         {
             Name = newEntity.Name,
             Price = newEntity.Price
         };
-        await _repository.Delete(changedProduct);
+        await _repository.Delete(oldProductResult.Value.Id);
         var result = _repository.Add(changedProduct);
         return Ok(result);
     }
@@ -84,12 +84,12 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var product = await _repository.Get(id);
-        if (product == null)
+        var result = await _repository.Delete(id);
+        if (result.IsFailed)
         {
             return StatusCode(404);
         }
-        var result = await _repository.Delete(product);
+        
         return Ok(result);
     }
 }

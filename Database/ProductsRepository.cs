@@ -1,4 +1,5 @@
-﻿using Kankoreziai.Models;
+﻿using FluentResults;
+using Kankoreziai.Models;
 
 namespace Kankoreziai.Database;
 
@@ -16,9 +17,14 @@ public class ProductsRepository : IProductsRepository
         return _context.Products.ToList();
     }
 
-    public ValueTask<Product?> Get(Guid id)
+    public async Task<Result<Product>> Get(Guid id)
     {
-        return _context.Products.FindAsync(id);
+        var item = await _context.Products.FindAsync(id);
+        if (item == null)
+        {
+            return Result.Fail("Did not find product");
+        }
+        return Result.Ok(item);
     }
 
     public async Task<Product> Add(Product entity)
@@ -28,10 +34,15 @@ public class ProductsRepository : IProductsRepository
         return entity;
     }
 
-    public async Task<Guid> Delete(Product entity)
+    public async Task<Result<Guid>> Delete(Guid id)
     {
-        _context.Products.Remove(entity);
+        var itemResult = await Get(id);
+        if (itemResult.IsFailed)
+        {
+            return Result.Fail(itemResult.Errors);
+        }
+        _context.Products.Remove(itemResult.Value);
         await _context.SaveChangesAsync();
-        return entity.Id;
+        return id;
     }
 }

@@ -1,6 +1,7 @@
 using Kankoreziai.Database;
 using Kankoreziai.Middleware;
 using Kankoreziai.Models;
+using Kankoreziai.Services;
 using Kankoreziai.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -35,6 +36,8 @@ using (var context = new KankoreziaiDbContext(dbOptions))
 }
 
 services.AddScoped<IProductsRepository, ProductsRepository>();
+services.AddScoped<IOrdersRepository, OrdersRepository>();
+services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 

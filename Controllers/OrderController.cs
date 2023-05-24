@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kankoreziai.Database;
 using Kankoreziai.Models;
+using Kankoreziai.Services;
 
 
 namespace Kankoreziai.Controllers;
@@ -10,10 +11,12 @@ namespace Kankoreziai.Controllers;
 public class OrderController : ControllerBase
 {
     private readonly IOrdersRepository _repository;
+    private readonly IOrderService _orderService;
 
-    public OrderController(IOrdersRepository repository)
+    public OrderController(IOrdersRepository repository, IOrderService orderService)
     {
         _repository = repository;
+        _orderService = orderService;
     }
 
     [HttpGet]
@@ -34,7 +37,7 @@ public class OrderController : ControllerBase
         var order = await _repository.Get(id); 
         if (order == null)
         {
-            return StatusCode(404);
+            return StatusCode(400);
         }
         return Ok(order);
     }
@@ -44,14 +47,14 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post(OrderDto newEntity)
     {
-        var order = await MakeOrder(newEntity);
-        if (order == null)
+        var result = await _orderService.MakeOrder(newEntity);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return new ObjectResult(result.Errors);
         }
 
-        var result = await _repository.Add(order);
-        return Ok(result);
+        var createdResult = await _repository.Add(result.Value);
+        return Ok(createdResult);
     }
 
     [HttpPut("{id}")]
@@ -66,14 +69,14 @@ public class OrderController : ControllerBase
             return StatusCode(404);
         }
 
-        var order = await MakeOrder(newEntity, oldOrder.Id);
-        if (order == null)
+        var order = await _orderService.MakeOrder(newEntity, oldOrder.Id);
+        if (order.IsFailed)
         {
-            return StatusCode(404);
+            return new ObjectResult(order.Errors);
         }
 
         await _repository.Delete(oldOrder);
-        var result = await _repository.Add(order);
+        var result = await _repository.Add(order.Value);
         return Ok(result);
     }
 
@@ -89,29 +92,6 @@ public class OrderController : ControllerBase
         }
         var result = await _repository.Delete(oldOrder);
         return Ok(result);
-    }
-
-    private async Task<Order?> MakeOrder(OrderDto newEntity, Guid? orderId = null)
-    {
-        var productTasks = newEntity.ItemsInOrder.Select(x => _context.Products.FindAsync(x.ProductId).AsTask()).ToList();
-        await Task.WhenAll(productTasks);
-        if (productTasks.Any(x => x.Result == null))
-        {
-            return null;
-        }
-        var products = productTasks.Select(x => x.Result);
-
-        orderId ??= Guid.NewGuid();
-
-        var orderProducts = newEntity.ItemsInOrder.Select(x =>
-            new OrderProduct(Guid.NewGuid(), orderId.Value, products.Single(y => y.Id == x.ProductId), x.Quantity));
-
-        return new Order(
-            orderId.Value,
-            orderProducts.ToList(),
-            newEntity.OrderStatus,
-            DateTime.UtcNow,
-            DateTime.UtcNow);
     }
 }
 
