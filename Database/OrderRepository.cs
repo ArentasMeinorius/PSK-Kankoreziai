@@ -7,12 +7,10 @@ namespace Kankoreziai.Database;
 public class OrderRepository : IOrderRepository
 {
     private readonly KankoreziaiDbContext _context;
-    private readonly IProductRepository _productRepository;
 
-    public OrderRepository(KankoreziaiDbContext context, IProductRepository productRepository)
+    public OrderRepository(KankoreziaiDbContext context)
     {
         _context = context;
-        _productRepository = productRepository;
     }
 
     public Task<List<Order>> GetAll()

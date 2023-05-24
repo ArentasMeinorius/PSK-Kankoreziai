@@ -33,6 +33,7 @@ using (var context = new KankoreziaiDbContext(dbOptions))
     context.InitializeData();
 }
 
+services.AddScoped<IDatabaseStateSaver, DatabaseStateSaver>();
 services.AddScoped<IProductRepository, ProductRepository>();
 services.AddScoped<IProductService, ProductService>();
 services.AddScoped<IOrderRepository, OrderRepository>();

@@ -31,7 +31,6 @@ public class ProductRepository : IProductRepository
     public async Task<Product> Add(Product entity)
     {
         await _context.Products.AddAsync(entity);
-        await _context.SaveChangesAsync();
         return entity;
     }
 
@@ -43,7 +42,6 @@ public class ProductRepository : IProductRepository
             return Result.Fail(itemResult.Errors);
         }
         _context.Products.Remove(itemResult.Value);
-        await _context.SaveChangesAsync();
         return id;
     }
 }

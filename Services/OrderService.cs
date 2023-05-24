@@ -8,11 +8,16 @@ public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IDatabaseStateSaver _databaseStateSaver;
 
-    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository)
+    public OrderService(
+        IOrderRepository orderRepository,
+        IProductRepository productRepository,
+        IDatabaseStateSaver databaseStateSaver)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
+        _databaseStateSaver = databaseStateSaver;
     }
 
     public Task<List<Order>> GetAll()
@@ -34,6 +39,7 @@ public class OrderService : IOrderService
         }
 
         var createdEntity = await _orderRepository.Add(result.Value);
+        await _databaseStateSaver.SaveChanges();
         return Result.Ok(createdEntity);
     }
 
@@ -51,15 +57,25 @@ public class OrderService : IOrderService
             return Result.Fail(order.Reasons.Select(x => x.Message));
         }
 
-        //cia turi buti transaction
-        var _ = await _orderRepository.Delete(id);
+        var deleteResult = await _orderRepository.Delete(id);
+        if (deleteResult.IsFailed)
+        {
+            return Result.Fail(deleteResult.Reasons.Select(x => x.Message));
+        }
         var newOne = await _orderRepository.Add(order.Value);
+        await _databaseStateSaver.SaveChanges();
         return Result.Ok(newOne);
     }
 
-    public Task<Result<Guid>> Delete(Guid id)
+    public async Task<Result<Guid>> Delete(Guid id)
     {
-        return _orderRepository.Delete(id);
+        var result = await _orderRepository.Delete(id);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+        await _databaseStateSaver.SaveChanges();
+        return result;
     }
 
     private async Task<Result<Order>> MakeOrder(OrderDto newEntity, Guid? orderId = null)

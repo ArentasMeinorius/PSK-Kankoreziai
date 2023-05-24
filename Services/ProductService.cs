@@ -7,10 +7,14 @@ namespace Kankoreziai.Services;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _repository;
+    private readonly IDatabaseStateSaver _databaseStateSaver;
 
-    public ProductService(IProductRepository repository)
+    public ProductService(
+        IProductRepository repository,
+        IDatabaseStateSaver databaseStateSaver)
     {
         _repository = repository;
+        _databaseStateSaver = databaseStateSaver;
     }
 
     public Task<List<Product>> GetAll()
@@ -23,7 +27,7 @@ public class ProductService : IProductService
         return _repository.Get(id);
     }
 
-    public Task<Product> Add(ProductDto entity)
+    public async Task<Product> Add(ProductDto entity)
     {
         var product = new Product(
             Guid.NewGuid(),
@@ -34,7 +38,9 @@ public class ProductService : IProductService
             entity.Pictures,
             entity.Quantity,
             entity.Category);
-        return _repository.Add(product);
+        var result = await _repository.Add(product);
+        await _databaseStateSaver.SaveChanges();
+        return result;
     }
 
     public async Task<Result<Product>> Update(Guid id, ProductDto newEntity)
@@ -49,13 +55,24 @@ public class ProductService : IProductService
             Name = newEntity.Name,
             Price = newEntity.Price
         };
-        await _repository.Delete(oldProductResult.Value.Id);
+        var deleteResult = await _repository.Delete(oldProductResult.Value.Id);
+        if (deleteResult.IsFailed)
+        {
+            return Result.Fail(deleteResult.Reasons.Select(x => x.Message));
+        }
         var newProduct = await _repository.Add(changedProduct);
+        await _databaseStateSaver.SaveChanges();
         return Result.Ok(newProduct);
     }
 
-    public Task<Result<Guid>> Delete(Guid id)
+    public async Task<Result<Guid>> Delete(Guid id)
     {
-        return _repository.Delete(id);
+        var result = await _repository.Delete(id);
+        if (result.IsFailed)
+        {
+            return result;
+        }
+        await _databaseStateSaver.SaveChanges();
+        return result;
     }
 }
