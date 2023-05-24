@@ -8,6 +8,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Navbar from './components/Navbar.jsx';
 import { Box } from '@mui/material';
 
+
 const theme = createTheme({
     palette: {
         primary: { main: green[500], contrastText: '#fff' },
