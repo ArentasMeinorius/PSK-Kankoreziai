@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Kankoreziai.Database;
 using Kankoreziai.Models;
 using Kankoreziai.Services;
+using FluentResults;
 
 
 namespace Kankoreziai.Controllers;
@@ -10,13 +10,11 @@ namespace Kankoreziai.Controllers;
 [Route("[controller]")]
 public class OrderController : ControllerBase
 {
-    private readonly IOrderRepository _repository;
-    private readonly IOrderService _orderService;
+    private readonly IOrderService _service;
 
-    public OrderController(IOrderRepository repository, IOrderService orderService)
+    public OrderController(IOrderService orderService)
     {
-        _repository = repository;
-        _orderService = orderService;
+        _service = orderService;
     }
 
     [HttpGet]
@@ -24,7 +22,7 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetAll()
     {
-        return Ok(_repository.GetAll());
+        return Ok(_service.GetAll());
     }
 
 
@@ -34,12 +32,12 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var order = await _repository.Get(id); 
-        if (order == null)
+        var result = await _service.Get(id); 
+        if (result.IsFailed)
         {
-            return StatusCode(400);
+            return StatusCode(400, result.Reasons);
         }
-        return Ok(order);
+        return Ok(result);
     }
 
     [HttpPost]
@@ -47,14 +45,12 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post(OrderDto newEntity)
     {
-        var result = await _orderService.MakeOrder(newEntity);
+        var result = await _service.Add(newEntity);
         if (result.IsFailed)
         {
-            return new ObjectResult(result.Errors);
+            return StatusCode(400, result.Reasons);
         }
-
-        var createdResult = await _repository.Add(result.Value);
-        return Ok(createdResult);
+        return Ok(result);
     }
 
     [HttpPut("{id}")]
@@ -63,20 +59,11 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, OrderDto newEntity)
     {
-        var oldOrder = await _repository.Get(id);
-        if (oldOrder == null)
+        var result = await _service.Update(id, newEntity);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-
-        var order = await _orderService.MakeOrder(newEntity, oldOrder.Id);
-        if (order.IsFailed)
-        {
-            return new ObjectResult(order.Errors);
-        }
-
-        await _repository.Delete(oldOrder);
-        var result = await _repository.Add(order.Value);
         return Ok(result);
     }
 
@@ -85,12 +72,11 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var oldOrder = await _repository.Get(id);
-        if (oldOrder == null)
+        var result = await _service.Delete(id);
+        if (result.IsFailed)
         {
-            return Ok(id);
+            return StatusCode(400, result.Reasons);
         }
-        var result = await _repository.Delete(oldOrder);
         return Ok(result);
     }
 }

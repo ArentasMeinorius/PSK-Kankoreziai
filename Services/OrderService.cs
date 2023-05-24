@@ -37,4 +37,51 @@ public class OrderService : IOrderService
             DateTime.UtcNow,
             DateTime.UtcNow);
     }
+
+    public IList<Order> GetAll()
+    {
+        var result = _orderRepository.GetAll();
+        return result;
+    }
+
+    public Task<Result<Order>> Get(Guid id)
+    {
+        return _orderRepository.Get(id);
+    }
+
+    public async Task<Result<Order>> Add(OrderDto entity)
+    {
+        var result = await MakeOrder(entity);
+        if (result.IsFailed)
+        {
+            return Result.Fail(result.Reasons.Select(x => x.Message));
+        }
+
+        var createdEntity = await _orderRepository.Add(result.Value);
+        return Result.Ok(createdEntity);
+    }
+
+    public async Task<Result<Order>> Update(Guid id, OrderDto newEntity)
+    {
+        var oldOrder = await Get(id);
+        if (oldOrder.IsFailed)
+        {
+            return Result.Fail(oldOrder.Reasons.Select(x => x.Message));
+        }
+
+        var order = await MakeOrder(newEntity, oldOrder.Value.Id);
+        if (order.IsFailed)
+        {
+            return Result.Fail(order.Reasons.Select(x => x.Message));
+        }
+
+        var _ = await _orderRepository.Delete(id);
+        var newOne = await _orderRepository.Add(order.Value);
+        return Result.Ok(newOne);
+    }
+
+    public Task<Result<Guid>> Delete(Guid id)
+    {
+        return _orderRepository.Delete(id);
+    }
 }
