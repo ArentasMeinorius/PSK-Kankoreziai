@@ -6,18 +6,18 @@ namespace Kankoreziai.Services;
 
 public class OrderService : IOrderService
 {
-    private readonly IOrdersRepository _ordersRepository;
-    private readonly IProductsRepository _productsRepository;
+    private readonly IOrderRepository _orderRepository;
+    private readonly IProductRepository _productRepository;
 
-    public OrderService(IOrdersRepository ordersRepository, IProductsRepository productsRepository)
+    public OrderService(IOrderRepository orderRepository, IProductRepository productRepository)
     {
-        _ordersRepository = ordersRepository;
-        _productsRepository = productsRepository;
+        _orderRepository = orderRepository;
+        _productRepository = productRepository;
     }
 
     public async Task<Result<Order>> MakeOrder(OrderDto newEntity, Guid? orderId = null)
     {
-        var productTasks = newEntity.ItemsInOrder.Select(x => _productsRepository.Get(x.ProductId)).ToList();
+        var productTasks = newEntity.ItemsInOrder.Select(x => _productRepository.Get(x.ProductId)).ToList();
         await Task.WhenAll(productTasks);
         if (productTasks.Any(x => x.Result.IsFailed))
         {

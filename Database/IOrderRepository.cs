@@ -2,7 +2,7 @@
 
 namespace Kankoreziai.Database;
 
-public interface IOrdersRepository
+public interface IOrderRepository
 {
     IList<Order> GetAll();
     Task<Order?> Get(Guid id);

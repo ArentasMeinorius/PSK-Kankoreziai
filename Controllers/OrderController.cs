@@ -10,10 +10,10 @@ namespace Kankoreziai.Controllers;
 [Route("[controller]")]
 public class OrderController : ControllerBase
 {
-    private readonly IOrdersRepository _repository;
+    private readonly IOrderRepository _repository;
     private readonly IOrderService _orderService;
 
-    public OrderController(IOrdersRepository repository, IOrderService orderService)
+    public OrderController(IOrderRepository repository, IOrderService orderService)
     {
         _repository = repository;
         _orderService = orderService;

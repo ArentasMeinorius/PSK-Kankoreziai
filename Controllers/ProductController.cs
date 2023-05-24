@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Kankoreziai.Database;
 using Kankoreziai.Models;
+using Kankoreziai.Services;
 
 
 namespace Kankoreziai.Controllers;
@@ -9,11 +9,11 @@ namespace Kankoreziai.Controllers;
 [Route("[controller]")]
 public class ProductController : ControllerBase
 {
-    private readonly IProductsRepository _repository;
+    private readonly IProductService _service;
 
-    public ProductController(IProductsRepository repository)
+    public ProductController(IProductService service)
     {
-        _repository = repository;
+        _service = service;
     }
 
     [HttpGet]
@@ -21,7 +21,7 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public IActionResult GetAll()
     {
-        return Ok(_repository.GetAll());
+        return Ok(_service.GetAll());
     }
 
 
@@ -31,7 +31,7 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var result = await _repository.Get(id);
+        var result = await _service.Get(id);
         if (result.IsFailed)
         {
             return StatusCode(400, result.Reasons);
@@ -44,16 +44,7 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post(ProductDto newEntity)
     {
-        var product = new Product(
-            Guid.NewGuid(),
-            newEntity.Name,
-            newEntity.Price,
-            newEntity.Description,
-            newEntity.Thumbnail,
-            newEntity.Pictures,
-            newEntity.Quantity,
-            newEntity.Category);
-        var result = await _repository.Add(product);
+        var result = await _service.Add(newEntity);
         return Ok(result);
     }
 
@@ -63,18 +54,11 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, ProductDto newEntity)
     {
-        var oldProductResult = await _repository.Get(id);
-        if (oldProductResult.IsFailed)
+        var result = await _service.Update(id, newEntity);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-        var changedProduct = oldProductResult.Value with
-        {
-            Name = newEntity.Name,
-            Price = newEntity.Price
-        };
-        await _repository.Delete(oldProductResult.Value.Id);
-        var result = _repository.Add(changedProduct);
         return Ok(result);
     }
 
@@ -84,12 +68,11 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var result = await _repository.Delete(id);
+        var result = await _service.Delete(id);
         if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-        
         return Ok(result);
     }
 }

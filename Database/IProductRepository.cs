@@ -3,7 +3,7 @@ using Kankoreziai.Models;
 
 namespace Kankoreziai.Database;
 
-public interface IProductsRepository
+public interface IProductRepository
 {
     IList<Product> GetAll();
     Task<Result<Product>> Get(Guid id);

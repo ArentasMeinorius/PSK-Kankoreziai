@@ -3,15 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kankoreziai.Database;
 
-public class OrdersRepository : IOrdersRepository
+public class OrderRepository : IOrderRepository
 {
     private readonly KankoreziaiDbContext _context;
-    private readonly IProductsRepository _productsRepository;
+    private readonly IProductRepository _productRepository;
 
-    public OrdersRepository(KankoreziaiDbContext context, IProductsRepository productsRepository)
+    public OrderRepository(KankoreziaiDbContext context, IProductRepository productRepository)
     {
         _context = context;
-        _productsRepository = productsRepository;
+        _productRepository = productRepository;
     }
 
     public IList<Order> GetAll()

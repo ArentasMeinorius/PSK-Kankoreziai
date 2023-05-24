@@ -3,11 +3,11 @@ using Kankoreziai.Models;
 
 namespace Kankoreziai.Database;
 
-public class ProductsRepository : IProductsRepository
+public class ProductRepository : IProductRepository
 {
     private readonly KankoreziaiDbContext _context;
 
-    public ProductsRepository(KankoreziaiDbContext context)
+    public ProductRepository(KankoreziaiDbContext context)
     {
         _context = context;
     }
