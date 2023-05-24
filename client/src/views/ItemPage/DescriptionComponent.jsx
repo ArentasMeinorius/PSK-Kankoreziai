@@ -15,6 +15,20 @@ const DescriptionComponent = ({ itemInfo }) => {
         addToCart(item, quantity);
     }
 
+    function handleQuantityChange(event) {
+        if (event.target.value < 1) {
+            setQuantity(1);
+            return;
+        }
+
+        if (event.target.value > itemInfo.quantity.units) {
+            setQuantity(itemInfo.quantity.units);
+            return;
+        }
+
+        setQuantity(event.target.value);
+    }
+
     if (!itemInfo) {
         return <Typography>Loading...</Typography>;
     } else {
@@ -32,8 +46,9 @@ const DescriptionComponent = ({ itemInfo }) => {
                             variant="outlined"
                             type="number"
                             placeholder="Quantity"
-                            onChange={(event) => setQuantity(event.target.value)}
+                            onChange={handleQuantityChange}
                             value={quantity}
+                            sx={{ color: 'white' }}
                         />
                     </Grid>
                     <Grid item xs={8}>
