@@ -36,7 +36,7 @@ public class OrderController : ControllerBase
         {
             return StatusCode(400, result.Reasons);
         }
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -49,7 +49,7 @@ public class OrderController : ControllerBase
         {
             return StatusCode(400, result.Reasons);
         }
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPut("{id}")]
@@ -63,7 +63,7 @@ public class OrderController : ControllerBase
         {
             return StatusCode(400, result.Reasons);
         }
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpDelete("{id}")]
@@ -76,7 +76,7 @@ public class OrderController : ControllerBase
         {
             return StatusCode(400, result.Reasons);
         }
-        return Ok(result);
+        return Ok(result.Value);
     }
 }
 

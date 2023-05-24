@@ -36,7 +36,7 @@ public class ProductController : ControllerBase
         {
             return StatusCode(400, result.Reasons);
         }
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -59,7 +59,7 @@ public class ProductController : ControllerBase
         {
             return StatusCode(400, result.Reasons);
         }
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpDelete("{id}")]
@@ -73,7 +73,7 @@ public class ProductController : ControllerBase
         {
             return StatusCode(400, result.Reasons);
         }
-        return Ok(result);
+        return Ok(result.Value);
     }
 }
 
