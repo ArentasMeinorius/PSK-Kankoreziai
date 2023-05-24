@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Landing from './views/Landing';
 import ItemPage from './views/ItemPage/ItemPage';
 import AdminLanding from './views/admin/AdminLanding';
+import CartPage from './views/cart/CartPage';
 import { green } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Navbar from './components/Navbar.jsx';
@@ -29,6 +30,7 @@ function App() {
                         <Route path="/" element={<Landing />} />
                         <Route path="/item/:id" element={<ItemPage />} />
                         <Route path="/admin" element={<AdminLanding />} />
+                        <Route path="/cart" element={<CartPage />} />
                     </Routes>
                 </Router>
             </ThemeProvider>
