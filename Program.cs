@@ -76,5 +76,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.Run();
