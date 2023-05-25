@@ -7,14 +7,11 @@ namespace Kankoreziai.Services;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _repository;
-    private readonly IDatabaseStateSaver _databaseStateSaver;
 
     public ProductService(
-        IProductRepository repository,
-        IDatabaseStateSaver databaseStateSaver)
+        IProductRepository repository)
     {
         _repository = repository;
-        _databaseStateSaver = databaseStateSaver;
     }
 
     public Task<List<Product>> GetAll()
@@ -39,7 +36,7 @@ public class ProductService : IProductService
             entity.Quantity,
             entity.Category);
         var result = await _repository.Add(product);
-        await _databaseStateSaver.SaveChanges();
+        await _repository.SaveChanges();
         return result;
     }
 
@@ -61,7 +58,7 @@ public class ProductService : IProductService
             return Result.Fail(deleteResult.Reasons.Select(x => x.Message));
         }
         var newProduct = await _repository.Add(changedProduct);
-        await _databaseStateSaver.SaveChanges();
+        await _repository.SaveChanges();
         return Result.Ok(newProduct);
     }
 
@@ -72,7 +69,7 @@ public class ProductService : IProductService
         {
             return result;
         }
-        await _databaseStateSaver.SaveChanges();
+        await _repository.SaveChanges();
         return result;
     }
 }

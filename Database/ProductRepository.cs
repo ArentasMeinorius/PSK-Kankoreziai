@@ -44,4 +44,9 @@ public class ProductRepository : IProductRepository
         _context.Products.Remove(itemResult.Value);
         return id;
     }
+
+    public Task SaveChanges()
+    {
+        return _context.SaveChangesAsync();
+    }
 }

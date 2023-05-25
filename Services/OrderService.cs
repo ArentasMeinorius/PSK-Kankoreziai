@@ -8,16 +8,13 @@ public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IDatabaseStateSaver _databaseStateSaver;
 
     public OrderService(
         IOrderRepository orderRepository,
-        IProductRepository productRepository,
-        IDatabaseStateSaver databaseStateSaver)
+        IProductRepository productRepository)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
-        _databaseStateSaver = databaseStateSaver;
     }
 
     public Task<List<Order>> GetAll()
@@ -39,7 +36,7 @@ public class OrderService : IOrderService
         }
 
         var createdEntity = await _orderRepository.Add(result.Value);
-        await _databaseStateSaver.SaveChanges();
+        await _orderRepository.SaveChanges();
         return Result.Ok(createdEntity);
     }
 
@@ -63,7 +60,7 @@ public class OrderService : IOrderService
             return Result.Fail(deleteResult.Reasons.Select(x => x.Message));
         }
         var newOne = await _orderRepository.Add(order.Value);
-        await _databaseStateSaver.SaveChanges();
+        await _orderRepository.SaveChanges();
         return Result.Ok(newOne);
     }
 
@@ -74,7 +71,7 @@ public class OrderService : IOrderService
         {
             return result;
         }
-        await _databaseStateSaver.SaveChanges();
+        await _orderRepository.SaveChanges();
         return result;
     }
 

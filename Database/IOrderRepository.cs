@@ -9,4 +9,5 @@ public interface IOrderRepository
     Task<Result<Order>> Get(Guid id);
     Task<Order> Add(Order entity);
     Task<Result<Guid>> Delete(Guid id);
+    Task SaveChanges();
 }

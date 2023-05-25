@@ -33,7 +33,6 @@ public class OrderRepository : IOrderRepository
     {
         await _context.Orders.AddAsync(entity);
         await _context.OrderProducts.AddRangeAsync(entity.OrderProducts);
-        await _context.SaveChangesAsync();
         return entity;
     }
 
@@ -47,7 +46,11 @@ public class OrderRepository : IOrderRepository
 
         _context.Orders.Remove(oldOrder.Value);
         _context.OrderProducts.RemoveRange(oldOrder.Value.OrderProducts);
-        await _context.SaveChangesAsync();
         return Result.Ok(id);
+    }
+
+    public Task SaveChanges()
+    {
+        return _context.SaveChangesAsync();
     }
 }
