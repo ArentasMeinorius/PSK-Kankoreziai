@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Kankoreziai.Database;
 using Kankoreziai.Models;
-using Microsoft.EntityFrameworkCore;
+using Kankoreziai.Services;
 
 
 namespace Kankoreziai.Controllers;
@@ -10,19 +9,19 @@ namespace Kankoreziai.Controllers;
 [Route("[controller]")]
 public class OrderController : ControllerBase
 {
-    private readonly KankoreziaiDbContext _context;
+    private readonly IOrderService _service;
 
-    public OrderController(KankoreziaiDbContext context)
+    public OrderController(IOrderService orderService)
     {
-        _context = context;
+        _service = orderService;
     }
 
     [HttpGet]
     [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
     [Produces("application/json")]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(_context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).ToList());
+        return Ok(await _service.GetAll());
     }
 
 
@@ -32,12 +31,12 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var order = await _context.Orders.Include(x => x.OrderProducts).ThenInclude(y => y.Product).FirstOrDefaultAsync(order => order.Id == id);
-        if (order == null)
+        var result = await _service.Get(id); 
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-        return Ok(order);
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -45,16 +44,12 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post(OrderDto newEntity)
     {
-        var order = await MakeOrder(newEntity);
-        if (order == null)
+        var result = await _service.Add(newEntity);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-
-        _context.Orders.Add(order);
-        _context.OrderProducts.AddRange(order.OrderProducts);
-        await _context.SaveChangesAsync();
-        return Ok(order);
+        return Ok(result.Value);
     }
 
     [HttpPut("{id}")]
@@ -63,24 +58,12 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, OrderDto newEntity)
     {
-        var oldOrder = await _context.Orders.FindAsync(id);
-        if (oldOrder == null)
+        var result = await _service.Update(id, newEntity);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-
-        var order = await MakeOrder(newEntity, oldOrder.Id);
-        if (order == null)
-        {
-            return StatusCode(404);
-        }
-
-        _context.Orders.Remove(oldOrder);
-        _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
-        _context.Orders.Add(order);
-        _context.OrderProducts.AddRange(order.OrderProducts);
-        await _context.SaveChangesAsync();
-        return Ok(order);
+        return Ok(result.Value);
     }
 
     [HttpDelete("{id}")]
@@ -88,38 +71,12 @@ public class OrderController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var oldOrder = await _context.Orders.FindAsync(id);
-        if (oldOrder == null)
+        var result = await _service.Delete(id);
+        if (result.IsFailed)
         {
-            return Ok(id);
+            return StatusCode(400, result.Reasons);
         }
-        _context.Orders.Remove(oldOrder);
-        _context.OrderProducts.RemoveRange(oldOrder.OrderProducts);
-        await _context.SaveChangesAsync();
-        return Ok(id);
-    }
-
-    private async Task<Order?> MakeOrder(OrderDto newEntity, Guid? orderId = null)
-    {
-        var productTasks = newEntity.ItemsInOrder.Select(x => _context.Products.FindAsync(x.ProductId).AsTask()).ToList();
-        await Task.WhenAll(productTasks);
-        if (productTasks.Any(x => x.Result == null))
-        {
-            return null;
-        }
-        var products = productTasks.Select(x => x.Result);
-
-        orderId ??= Guid.NewGuid();
-
-        var orderProducts = newEntity.ItemsInOrder.Select(x =>
-            new OrderProduct(Guid.NewGuid(), orderId.Value, products.Single(y => y.Id == x.ProductId), x.Quantity));
-
-        return new Order(
-            orderId.Value,
-            orderProducts.ToList(),
-            newEntity.OrderStatus,
-            DateTime.UtcNow,
-            DateTime.UtcNow);
+        return Ok(result.Value);
     }
 }
 
