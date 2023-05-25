@@ -50,32 +50,24 @@ public class ProductRepository : IProductRepository
         return _context.SaveChangesAsync();
     }
 
-    public async Task<Result<Product>> UpdateFirstException()
+    public async Task<Result<Guid>> DeleteFirstException()
     {
-        var productA = _context.Products.First();
-        var productB = _context.Products.First();
-        var product1 = productA with
-        {
-            Name = productA.Name + "1"
-        };
-        var product2 = productB with
-        {
-            Name = productA.Name + "2"
-        };
+        var product1 = _context.Products.First();
+        var product2 = _context.Products.First();
 
-        _context.Products.Update(product1);
+        _context.Products.Remove(product1);
         await _context.SaveChangesAsync();
-        
+        _context.Products.Remove(product2);
+
         try
         {
-            _context.Products.Update(product1);
             await _context.SaveChangesAsync();
         }
-        catch (Exception ex)//DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException exception)
         {
-            return Result.Fail("Optimistic Lock Exception");
+            return Result.Fail("Optimistic Lock Exception. " + exception.Message);
         }
 
-        return Result.Ok(product1);
+        return Result.Ok(product2.Id);
     }
 }
