@@ -1,5 +1,6 @@
 using Kankoreziai.Database;
 using Kankoreziai.Middleware;
+using Kankoreziai.Services;
 using Kankoreziai.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -18,7 +19,7 @@ services.AddScoped<IUserService, UserService>();
 
 services.AddControllersWithViews();
 services.AddSwaggerGen(options =>
-{
+{ 
     options.EnableAnnotations();
 });
 
@@ -32,6 +33,10 @@ using (var context = new KankoreziaiDbContext(dbOptions))
     context.InitializeData();
 }
 
+services.AddScoped<IProductRepository, ProductRepository>();
+services.AddScoped<IProductService, ProductService>();
+services.AddScoped<IOrderRepository, OrderRepository>();
+services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
