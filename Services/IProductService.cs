@@ -9,5 +9,6 @@ public interface IProductService
     Task<Result<Product>> Get(Guid id);
     Task<Product> Add(ProductDto entity);
     Task<Result<Product>> Update(Guid id, ProductDto newEntity);
+    Task<Result<Product>> UpdateFirstException();
     Task<Result<Guid>> Delete(Guid id);
 }

@@ -49,4 +49,33 @@ public class ProductRepository : IProductRepository
     {
         return _context.SaveChangesAsync();
     }
+
+    public async Task<Result<Product>> UpdateFirstException()
+    {
+        var productA = _context.Products.First();
+        var productB = _context.Products.First();
+        var product1 = productA with
+        {
+            Name = productA.Name + "1"
+        };
+        var product2 = productB with
+        {
+            Name = productA.Name + "2"
+        };
+
+        _context.Products.Update(product1);
+        await _context.SaveChangesAsync();
+        
+        try
+        {
+            _context.Products.Update(product1);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)//DbUpdateConcurrencyException)
+        {
+            return Result.Fail("Optimistic Lock Exception");
+        }
+
+        return Result.Ok(product1);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using Kankoreziai.Database;
 using Kankoreziai.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kankoreziai.Services;
 
@@ -60,6 +61,11 @@ public class ProductService : IProductService
         var newProduct = await _repository.Add(changedProduct);
         await _repository.SaveChanges();
         return Result.Ok(newProduct);
+    }
+
+    public Task<Result<Product>> UpdateFirstException()
+    {
+        return _repository.UpdateFirstException();
     }
 
     public async Task<Result<Guid>> Delete(Guid id)
