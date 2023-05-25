@@ -1,9 +1,8 @@
 using Kankoreziai.Database;
 using Kankoreziai.Middleware;
-using Kankoreziai.Models;
+using Kankoreziai.Services;
 using Kankoreziai.Services.Users;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +33,10 @@ using (var context = new KankoreziaiDbContext(dbOptions))
     context.InitializeData();
 }
 
+services.AddScoped<IProductRepository, ProductRepository>();
+services.AddScoped<IProductService, ProductService>();
+services.AddScoped<IOrderRepository, OrderRepository>();
+services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Kankoreziai.Database;
 using Kankoreziai.Models;
+using Kankoreziai.Services;
 
 
 namespace Kankoreziai.Controllers;
@@ -9,19 +9,19 @@ namespace Kankoreziai.Controllers;
 [Route("[controller]")]
 public class ProductController : ControllerBase
 {
-    private readonly KankoreziaiDbContext _context;
+    private readonly IProductService _service;
 
-    public ProductController(KankoreziaiDbContext context)
+    public ProductController(IProductService service)
     {
-        _context = context;
+        _service = service;
     }
 
     [HttpGet]
     [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
     [Produces("application/json")]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(_context.Products.ToList());
+        return Ok(await _service.GetAll());
     }
 
 
@@ -31,12 +31,12 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Get(Guid id)
     {
-        var flower = await _context.Products.FindAsync(id);
-        if (flower == null)
+        var result = await _service.Get(id);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-        return Ok(flower);
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -44,18 +44,8 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Post(ProductDto newEntity)
     {
-        var newFlower = new Product(
-            Guid.NewGuid(),
-            newEntity.Name,
-            newEntity.Price,
-            newEntity.Description,
-            newEntity.Thumbnail,
-            newEntity.Pictures,
-            newEntity.Quantity,
-            newEntity.Category);
-        _context.Products.Add(newFlower);
-        await _context.SaveChangesAsync();
-        return Ok(newFlower);
+        var result = await _service.Add(newEntity);
+        return Ok(result);
     }
 
     [HttpPut("{id}")]
@@ -64,35 +54,26 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Put(Guid id, ProductDto newEntity)
     {
-        var oldFlower = await _context.Products.FindAsync(id);
-        if (oldFlower == null)
+        var result = await _service.Update(id, newEntity);
+        if (result.IsFailed)
         {
-            return StatusCode(404);
+            return StatusCode(400, result.Reasons);
         }
-        var changedFlower = oldFlower with
-        {
-            Name = newEntity.Name,
-            Price = newEntity.Price
-        };
-        _context.Products.Remove(oldFlower);
-        _context.Products.Add(changedFlower);
-        await _context.SaveChangesAsync();
-        return Ok(changedFlower);
+        return Ok(result.Value);
     }
 
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var oldFlower = await _context.Products.FindAsync(id);
-        if (oldFlower == null)
+        var result = await _service.Delete(id);
+        if (result.IsFailed)
         {
-            return Ok(id);
+            return StatusCode(400, result.Reasons);
         }
-        _context.Products.Remove(oldFlower);
-        await _context.SaveChangesAsync();
-        return Ok(id);
+        return Ok(result.Value);
     }
 }
 
