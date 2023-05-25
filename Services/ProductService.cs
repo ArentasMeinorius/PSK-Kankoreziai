@@ -1,7 +1,6 @@
 ﻿using FluentResults;
 using Kankoreziai.Database;
 using Kankoreziai.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Kankoreziai.Services;
 
