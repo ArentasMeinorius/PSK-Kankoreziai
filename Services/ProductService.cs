@@ -34,7 +34,8 @@ public class ProductService : IProductService
             entity.Thumbnail,
             entity.Pictures,
             entity.Quantity,
-            entity.Category);
+            entity.Category,
+            entity.Season);
         var result = await _repository.Add(product);
         await _repository.SaveChanges();
         return result;
