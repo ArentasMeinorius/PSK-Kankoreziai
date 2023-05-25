@@ -81,7 +81,9 @@ public class OrderService : IOrderService
         await Task.WhenAll(productTasks);
         if (productTasks.Any(x => x.Result.IsFailed))
         {
-            return Result.Fail(productTasks.Where(y => y.IsFaulted).SelectMany(z => z.Result.Errors));
+            var failedTasks = productTasks.Where(y => y.Result.IsFailed);
+            var messages = failedTasks.SelectMany(x => x.Result.Reasons).Select(y => y.Message.ToString());
+            return Result.Fail(messages);
         }
         var products = productTasks.Select(x => x.Result);
 
