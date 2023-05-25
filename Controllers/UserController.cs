@@ -20,7 +20,7 @@ namespace Kankoreziai.Controllers
 
         [HttpGet]
         [ActionName("haspermission")]
-        [GoogleAuthentication]
+        [RequiresAuthentication]
         public async Task<ActionResult<bool>> HasPermission([FromQuery] string permission)
         {
             var userEmail = User.FindFirstValue(ClaimTypes.Email);

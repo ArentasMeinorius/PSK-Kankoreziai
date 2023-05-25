@@ -1,4 +1,5 @@
 ﻿using Kankoreziai.Attributes.Authentication;
+using Kankoreziai.Services.Users;
 using Newtonsoft.Json;
 using RestSharp;
 using Serilog;
@@ -8,10 +9,17 @@ namespace Kankoreziai.Middleware
 {
     public class GoogleAuthenticationMiddleware : IMiddleware
     {
+
+        private readonly IUserService _userService;
+        public GoogleAuthenticationMiddleware(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var endpoint = context.GetEndpoint();
-            var requiresAuthentication = endpoint?.Metadata?.GetMetadata<GoogleAuthenticationAttribute>() != null;
+            var requiresAuthentication = endpoint?.Metadata?.GetMetadata<RequiresAuthenticationAttribute>() != null;
 
             if(!requiresAuthentication)
             {
@@ -66,7 +74,19 @@ namespace Kankoreziai.Middleware
                 }
 
                 string email = responseObject.email;
-                string name = responseObject.name;
+
+                if (email == null)
+                {
+                    context.Response.StatusCode = 401;
+                    return;
+                }
+
+                var user = await _userService.GetUserAsync(email);
+                if (user == null)
+                {
+                    _userService.CreateUser(email);
+                    return;
+                }
 
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
                 {
