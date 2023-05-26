@@ -42,4 +42,9 @@ public class SeasonalProductRepositoryDecorator : IProductRepository
     {
         return _underlyingRepository.SaveChanges();
     }
+
+    public Task<Result<Guid>> DeleteFirstException()
+    {
+        return _underlyingRepository.DeleteFirstException();
+    }
 }
