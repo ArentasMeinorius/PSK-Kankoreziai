@@ -21,7 +21,6 @@ namespace Kankoreziai.Middleware
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            Log.Warning("Middleware invoked");
             var requiresAuthentication = context.GetEndpoint()?.Metadata.GetMetadata<RequiresAuthenticationAttribute>();
 
             if (requiresAuthentication == null)

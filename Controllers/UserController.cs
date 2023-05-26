@@ -29,8 +29,7 @@ namespace Kankoreziai.Controllers
         [RequiresAuthentication]
         public ActionResult<bool> HasPermission([FromQuery] string permission)
         {
-            User? user = _authenticationService.User;
-            Log.Warning("User: {user}", user);
+            var user = _authenticationService.User;
             if (user == null)
             {
                 return false;

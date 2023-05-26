@@ -8,7 +8,6 @@ export function useAuth() {
 
     const callLogin = useGoogleLogin({
         onSuccess: (response) => {
-            console.log(response);
             updateAuthKey(response.access_token);
             handleLogin();
         },
@@ -19,7 +18,6 @@ export function useAuth() {
     });
 
     function handleLogin() {
-        console.log('handleLogin');
         getCredentials(getAuthKey()).then((credentials) => {
             setCredentials(credentials);
             setIsAuthenticated(true);
@@ -68,7 +66,6 @@ async function getCredentials(authKey) {
         }
         return response.json();
     });
-    console.log(result);
     return result;
 }
 

@@ -15,7 +15,6 @@ export default function useAuthWithPermissions(permissions) {
             },
         });
         const hasAccess = await response.json();
-        console.log(`permission ${permission} has access: ${hasAccess}`);
         if (!hasAccess) {
             return false;
         }
@@ -35,7 +34,6 @@ export default function useAuthWithPermissions(permissions) {
 
     useEffect(() => {
         if (isAuthenticated && authKey) {
-            console.log('Checking permissions');
             checkPermissions();
         }
     }, [isAuthenticated, credentials, authKey]);
