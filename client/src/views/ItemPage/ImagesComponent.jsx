@@ -8,7 +8,6 @@ const ImagesComponent = ({ images }) => {
     useEffect(() => {
         setMainImage(images[0]);
     }, [images]);
-    console.log('image: ', images);
     if (images) {
         return (
             <Container>

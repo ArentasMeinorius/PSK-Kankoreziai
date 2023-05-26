@@ -10,6 +10,7 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router';
+import LoginButton from './auth/LoginButton';
 
 const defaultPages = [
     {
@@ -101,6 +102,8 @@ const Navbar = () => {
                             </Button>
                         ))}
                     </Box>
+
+                    <LoginButton />
                 </Toolbar>
             </Container>
         </AppBar>

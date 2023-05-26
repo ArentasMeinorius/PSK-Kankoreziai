@@ -1,82 +1,37 @@
 import React from 'react';
-import { Alert, Button, Container } from '@mui/material';
-import { GoogleLogin } from '@react-oauth/google';
+import { Button, Container } from '@mui/material';
+import useAuthWithPermissions from '../../authentication/useAuthWithPermissions';
 
 export default function AdminLanding() {
-    const [isAuthConfirmationInProgress, setAuthConfirmationInProgress] = React.useState(true);
-    const [authKey, setAuthKey] = React.useState(null);
-    const [error, setError] = React.useState('');
+    // eslint-disable-next-line no-unused-vars
+    const [isAuthenticated, credentials, authKey, hasPermissions, callLogin, callLogout] = useAuthWithPermissions([
+        'items.see',
+        'items.manage',
+    ]);
 
-    React.useEffect(() => {
-        const authKey = localStorage.getItem('authKey');
-        if (authKey) {
-            setAuthKey(authKey);
-        }
-    }, []);
-
-    React.useEffect(() => {
-        setAuthConfirmationInProgress(true);
-        if (!authKey) {
-            setAuthConfirmationInProgress(false);
-            return;
-        }
-
-        const verifyPermissions = async () => {
-            const response = await fetch('http://localhost:5000/user/haspermission?permission=items.see', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${authKey}`,
-                },
-            });
-            const hasAccess = await response.json();
-            if (!hasAccess) {
-                setAuthKey(null);
-                setError('You do not have permission to access this page');
-            }
-            setAuthConfirmationInProgress(false);
-        };
-        verifyPermissions();
-    }, [authKey]);
-
-    if (isAuthConfirmationInProgress) return <Container>Authenticating...</Container>;
-
-    if (!authKey && !isAuthConfirmationInProgress)
+    if (!isAuthenticated) {
         return (
-            <>
-                {error.length > 0 && (
-                    <Alert severity="error">
-                        {error}
-                        <br />
-                        Please login to continue
-                    </Alert>
-                )}
-                <GoogleLogin
-                    onSuccess={(credentialResponse) => {
-                        localStorage.setItem('authKey', credentialResponse.credential);
-                        setAuthKey(credentialResponse.credential);
-                        setAuthConfirmationInProgress(false);
-                        setError('');
-                    }}
-                    onError={() => {
-                        setError('Login Failed');
-                        console.log('Login Failed');
-                    }}
-                />
-            </>
+            <Container>
+                <h1>Admin Landing Page</h1>
+                <p>You are not logged in.</p>
+            </Container>
         );
+    }
+
+    if (!hasPermissions) {
+        return (
+            <Container>
+                <h1>Admin Landing Page</h1>
+                <p>You do not have permission to view this page.</p>
+                <Button onClick={callLogout}>Logout</Button>
+            </Container>
+        );
+    }
 
     return (
         <Container>
-            {error.length > 0 && <Alert severity="error">{error}</Alert>}
             <h1>Admin Landing Page</h1>
-            <Button
-                onClick={() => {
-                    localStorage.removeItem('authKey');
-                    setAuthKey(null);
-                }}
-            >
-                Logout
-            </Button>
+            <Button onClick={callLogout}>Logout</Button>
         </Container>
     );
 }
