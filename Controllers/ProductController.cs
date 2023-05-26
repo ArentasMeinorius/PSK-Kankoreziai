@@ -68,6 +68,7 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
+        await Task.Delay(TimeSpan.FromSeconds(10)); // Asynchronous communication requirement
         var result = await _service.Delete(id);
         if (result.IsFailed)
         {
