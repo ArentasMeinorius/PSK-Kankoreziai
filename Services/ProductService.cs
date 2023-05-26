@@ -34,7 +34,8 @@ public class ProductService : IProductService
             entity.Thumbnail,
             entity.Pictures,
             entity.Quantity,
-            entity.Category);
+            entity.Category,
+            entity.Season);
         var result = await _repository.Add(product);
         await _repository.SaveChanges();
         return result;
@@ -60,6 +61,11 @@ public class ProductService : IProductService
         var newProduct = await _repository.Add(changedProduct);
         await _repository.SaveChanges();
         return Result.Ok(newProduct);
+    }
+
+    public Task<Result<Guid>> DeleteFirstException()
+    {
+        return _repository.DeleteFirstException();
     }
 
     public async Task<Result<Guid>> Delete(Guid id)

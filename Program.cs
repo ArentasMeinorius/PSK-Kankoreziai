@@ -3,6 +3,8 @@ using Kankoreziai.Middleware;
 using Kankoreziai.Services;
 using Kankoreziai.Services.Users;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +35,9 @@ using (var context = new KankoreziaiDbContext(dbOptions))
     context.InitializeData();
 }
 
+services.Configure<SeasonalProductRepositoryDecoratorOptions>(configuration.GetSection("SeasonalProductRepositoryDecoratorOptions"));
 services.AddScoped<IProductRepository, ProductRepository>();
+services.Decorate<IProductRepository, SeasonalProductRepositoryDecorator>();
 services.AddScoped<IProductService, ProductService>();
 services.AddScoped<IOrderRepository, OrderRepository>();
 services.AddScoped<IOrderService, OrderService>();
@@ -76,5 +80,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
+
+if (configuration.GetSection("RequestLoggingMiddleware:Enabled").Get<bool>())
+{
+    app.UseMiddleware<RequestLoggingMiddleware>();
+}
 
 app.Run();
