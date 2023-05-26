@@ -75,5 +75,19 @@ public class ProductController : ControllerBase
         }
         return Ok(result.Value);
     }
+
+    [HttpDelete]
+    [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
+    public async Task<IActionResult> DeleteFirstException()
+    {
+        var result = await _service.DeleteFirstException();
+        if (result.IsFailed)
+        {
+            return StatusCode(400, result.Reasons);
+        }
+        return Ok(result.Value);
+    }
 }
 

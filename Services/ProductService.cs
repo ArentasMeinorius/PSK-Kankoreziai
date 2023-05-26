@@ -63,6 +63,11 @@ public class ProductService : IProductService
         return Result.Ok(newProduct);
     }
 
+    public Task<Result<Guid>> DeleteFirstException()
+    {
+        return _repository.DeleteFirstException();
+    }
+
     public async Task<Result<Guid>> Delete(Guid id)
     {
         var result = await _repository.Delete(id);
