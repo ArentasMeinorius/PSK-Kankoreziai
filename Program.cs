@@ -77,4 +77,9 @@ app.MapControllerRoute(
     pattern: "{controller}/{action=Index}/{id?}");
 
 
+if (configuration.GetSection("RequestLoggingMiddleware:Enabled").Get<bool>())
+{
+    app.UseMiddleware<RequestLoggingMiddleware>();
+}
+
 app.Run();
