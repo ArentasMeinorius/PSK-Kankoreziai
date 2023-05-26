@@ -37,6 +37,11 @@ services.AddScoped<IProductRepository, ProductRepository>();
 services.AddScoped<IProductService, ProductService>();
 services.AddScoped<IOrderRepository, OrderRepository>();
 services.AddScoped<IOrderService, OrderService>();
+services.AddScoped<IUserRepository, UserRepository>();
+services.AddScoped<IUserService, UserService>();
+services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

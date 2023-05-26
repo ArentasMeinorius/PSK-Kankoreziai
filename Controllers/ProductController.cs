@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kankoreziai.Models;
 using Kankoreziai.Services;
-
+using Kankoreziai.Attributes.Authentication;
 
 namespace Kankoreziai.Controllers;
 
@@ -42,6 +42,7 @@ public class ProductController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
     [Produces("application/json")]
+    [RequiresAuthentication("products.create")]
     public async Task<IActionResult> Post(ProductDto newEntity)
     {
         var result = await _service.Add(newEntity);

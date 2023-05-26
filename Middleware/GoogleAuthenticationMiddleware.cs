@@ -1,8 +1,11 @@
-﻿using Kankoreziai.Attributes.Authentication;
+﻿using FluentResults;
+using Kankoreziai.Attributes.Authentication;
 using Kankoreziai.Services.Users;
 using Newtonsoft.Json;
 using RestSharp;
 using Serilog;
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace Kankoreziai.Middleware
@@ -18,10 +21,10 @@ namespace Kankoreziai.Middleware
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var endpoint = context.GetEndpoint();
-            var requiresAuthentication = endpoint?.Metadata?.GetMetadata<RequiresAuthenticationAttribute>() != null;
+            Log.Warning("Middleware invoked");
+            var requiresAuthentication = context.GetEndpoint()?.Metadata.GetMetadata<RequiresAuthenticationAttribute>();
 
-            if(!requiresAuthentication)
+            if (requiresAuthentication == null)
             {
                 await next(context);
                 return;
@@ -41,68 +44,78 @@ namespace Kankoreziai.Middleware
                 return;
             }
 
-
             accessToken = accessToken.Substring("Bearer ".Length).Trim();
 
+            var tokenResult = await GetEmailFromAccessToken(accessToken);
+
+            if (tokenResult.IsFailed)
+            {
+                context.Response.StatusCode = 401;
+            }
+
+
+            var user = await _userService.GetOrCreate(tokenResult.Value);
+
+            if(requiresAuthentication.Permissions != null)
+            {
+                if (user.Permissions.All(permission => !requiresAuthentication.Permissions.Contains(permission)))
+                {
+                    context.Response.StatusCode = 403;
+                    return;
+                }
+            }
+
+            context.Items.Add("User", user);
+
+            await next(context);
+        }
+
+        private async Task<Result<string>> GetEmailFromAccessToken(string accessToken)
+        {
             var client = new RestClient("https://oauth2.googleapis.com");
-            var request = new RestRequest($"/tokeninfo?id_token={accessToken}");
+            var request = new RestRequest($"/tokeninfo?access_token={accessToken}");
 
             request.RequestFormat = DataFormat.Json;
 
+            string? email = null;
+
             try
             {
-                RestResponse response = await client.ExecuteAsync(request); 
+                RestResponse response = await client.ExecuteAsync(request);
 
-                if(response.StatusCode != System.Net.HttpStatusCode.OK)
+                if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    context.Response.StatusCode = 401;
-                    return;
+                    return Result.Fail("Invalid request");
                 }
 
                 if (response.Content == null)
                 {
-                    context.Response.StatusCode = 401;
-                    return;
+                    return Result.Fail("Invalid response content");
                 }
 
                 var responseObject = JsonConvert.DeserializeObject<dynamic>(response.Content);
 
-                if(responseObject == null)
+                if (responseObject == null)
                 {
-                    context.Response.StatusCode = 401;
-                    return;
+                    return Result.Fail("Couldn't deserialize response");
                 }
 
-                string email = responseObject.email;
+                email = responseObject.email;
 
                 if (email == null)
                 {
-                    context.Response.StatusCode = 401;
-                    return;
+                    return Result.Fail("Email is null");
                 }
-
-                var user = await _userService.GetUserAsync(email);
-                if (user == null)
-                {
-                    _userService.CreateUser(email);
-                    return;
-                }
-
-                var principal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, name),
-                    new Claim(ClaimTypes.Email, email)
-                }, "Google"));
-
-                context.User = principal;
             }
             catch (Exception ex)
             {
-                context.Response.StatusCode = 500;
-                Log.Error(ex, "Error while validating token");
+                return Result.Fail("Caught exception while sending request");
             }
 
-            await next(context);
+            return Result.Ok(email);
         }
+
+        
+
     }
 }
