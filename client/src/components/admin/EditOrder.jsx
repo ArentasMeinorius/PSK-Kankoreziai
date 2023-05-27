@@ -21,6 +21,7 @@ export const EditOrder = ({currentOrder}) => {
     const [error, setError] = React.useState('');
     
     const orderStatus = [
+        'Created',
         'Awaiting Payment',
         'Payment Accepted',
         'Payment Rejected',
@@ -45,10 +46,12 @@ export const EditOrder = ({currentOrder}) => {
             })),
             orderStatus: order.orderStatus
         }
-        fetch(`http://localhost:5000/order/${order.id}`, {
+        const token = localStorage.getItem('authKey');
+        fetch(`http://localhost:5000/order/put/${order.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                Authentication: `Bearer ${token}`
             },
             body: JSON.stringify(orderBody)
         })

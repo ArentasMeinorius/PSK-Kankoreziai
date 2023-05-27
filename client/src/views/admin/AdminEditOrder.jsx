@@ -9,7 +9,14 @@ const AdminEditOrder = () => {
     let { id } = useParams();
 
     useEffect(() => {
-        fetch(`http://localhost:5000/order/${id}`)
+        const token = localStorage.getItem('authKey');
+        fetch(`http://localhost:5000/order/get/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+        })
             .then((response) => {
                 if (response.ok) {
                     return response.json();

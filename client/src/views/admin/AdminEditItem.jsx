@@ -7,9 +7,17 @@ import {Container, Typography} from "@mui/material";
 const AdminEditItem = () => {
     const [productInfo, setProductInfo] = useState({});
     let { id } = useParams();
+    // eslint-disable-next-line no-unused-vars
 
     useEffect(() => {
-        fetch(`http://localhost:5000/product/${id}`)
+        const token = localStorage.getItem('authKey');
+        fetch(`http://localhost:5000/product/${id}`, {
+            method: "GET",
+                headers: {
+                "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+            },
+        })
             .then((response) => {
                 if (response.ok) {
                     return response.json();

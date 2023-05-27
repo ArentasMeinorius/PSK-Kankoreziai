@@ -6,6 +6,7 @@ export default function AdminOrderList() {
     const [orders, setOrders] = useState([]);
 
     const orderStatus = [
+        'Created',
         'Awaiting Payment',
         'Payment Accepted',
         'Payment Rejected',
@@ -23,7 +24,14 @@ export default function AdminOrderList() {
     }
     
     useEffect(() => {
-        fetch('http://localhost:5000/Order')
+        const token = localStorage.getItem('authKey');
+        fetch('http://localhost:5000/Order/GetAll', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+        })
             .then((response) => {
                 if (response.ok) {
                     return response.json();
