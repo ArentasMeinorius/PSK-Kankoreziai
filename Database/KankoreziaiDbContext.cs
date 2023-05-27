@@ -62,7 +62,7 @@ public class KankoreziaiDbContext : DbContext
             quantity => quantity.Units,
             quantity => new Quantity(quantity)
         );
-                                        
+
     }
 
     public void InitializeData()
@@ -96,7 +96,7 @@ public class KankoreziaiDbContext : DbContext
         order2.OrderProducts.AddRange(new List<OrderProduct>() { new(Guid.NewGuid(), order2.Id, product1, new Quantity(5)), new(Guid.NewGuid(), order2.Id, product2, new Quantity(5)) });
         Orders.AddRange(new List<Order>() { order1, order2, order3 });
         Products.AddRange(new List<Product>() { product1, product2 });
-        
+
         var cart = new Cart(Guid.NewGuid());
 
         var admin = new User

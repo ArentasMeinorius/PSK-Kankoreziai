@@ -115,7 +115,7 @@ public class OrderService : IOrderService
         var order = await MakeOrder(new OrderDto
         (
             cart.Value.CartItems.Select(x => new ItemInOrder(x.ProductId, x.Quantity)).ToList(),
-            OrderStatus.AwaitingPayment
+            OrderStatus.Created
         ), userId);
 
         if (order.IsFailed)

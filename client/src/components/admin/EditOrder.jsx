@@ -24,6 +24,7 @@ export const EditOrder = ({ currentOrder, authKey }) => {
     const [error, setError] = React.useState('');
 
     const orderStatus = [
+        'Created',
         'Awaiting Payment',
         'Payment Accepted',
         'Payment Rejected',

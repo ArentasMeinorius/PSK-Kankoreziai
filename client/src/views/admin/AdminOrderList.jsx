@@ -7,6 +7,7 @@ export default function AdminOrderList({ authKey }) {
     const [orders, setOrders] = useState([]);
 
     const orderStatus = [
+        'Created',
         'Awaiting Payment',
         'Payment Accepted',
         'Payment Rejected',
