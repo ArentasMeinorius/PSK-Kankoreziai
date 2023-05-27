@@ -21,6 +21,10 @@ const defaultPages = [
         title: 'Cart',
         redirect: '/Cart',
     },
+    {
+        title: 'Products',
+        redirect: '/item',
+    },
 ];
 
 const Navbar = () => {
