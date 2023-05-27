@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PropTypes } from 'prop-types';
 import {
     Container,
     Table,
@@ -11,71 +12,11 @@ import {
     TableBody,
     Button,
     ButtonGroup,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Select,
-    FormLabel,
-    RadioGroup,
-    Radio,
-    FormControlLabel,
 } from '@mui/material';
 import { useCart } from '../../cart/useCart';
 import { useAuth } from '../../authentication/useAuth';
 
-export default function Cart() {
-    const [total, setTotal] = useState(0);
-
-    const [error, setError] = useState();
-    const shippingMethods = ['Pick up in store'];
-    const [selectedShippingMethod, setSelectedShippingMethod] = useState(shippingMethods[0]);
-
-    const paymentMethods = ['Pay in the shop'];
-    // eslint-disable-next-line no-unused-vars
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0]);
-    // eslint-disable-next-line no-unused-vars
-
-    const handleShippingChange = (event) => {
-        setSelectedShippingMethod(event.target.value);
-    };
-
-    const handlePaymentChange = (event) => {
-        setSelectedPaymentMethod(event.target.value);
-    };
-
-    const sendOrder = () => {
-        const orderBody = {
-            itemsInOrder: cart.map((product) => ({
-                productId: product.item.id,
-                quantity: product.item.quantity,
-            })),
-            orderStatus: 0,
-        };
-        console.log(orderBody);
-
-        fetch('http://localhost:5000/order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderBody),
-        }).then((response) => {
-            if (response.ok) {
-                //nav to orders? if we have such page
-            } else {
-                return response.text().then((text) => {
-                    setError(text);
-                });
-            }
-        });
-    };
-    /*
-    useEffect(() => {
-        let cart = localStorage.getItem('cart');
-        if (cart) {
-            setCart(JSON.parse(cart));
-        }
-        setIsCartSet(true);
-    }, []);
-*/
+export default function Cart(props) {
     // eslint-disable-next-line no-unused-vars
     const [isAuthenticated, credentials, authKey, callLogin, callLogout] = useAuth();
     // eslint-disable-next-line no-unused-vars
@@ -97,7 +38,7 @@ export default function Cart() {
         for (var i = 0; i < products.length; i++) {
             tempTotal += products[i].price.cents * cart[i].quantity.units;
         }
-        setTotal(tempTotal);
+        props.setTotal(tempTotal);
     }, [products]);
 
     const removeItemFromCart = (cartElement) => {
@@ -153,12 +94,10 @@ export default function Cart() {
         );
     }
 
-    console.log(products);
-
     return (
-        <Container>
+        <Container sx={{ display: 'flex' }}>
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="spanning table">
+                <Table sx={{ minWidth: '50%' }} aria-label="spanning table">
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
@@ -199,74 +138,15 @@ export default function Cart() {
                             <TableCell />
                             <TableCell />
                             <TableCell />
-                            <TableCell align="right">{getPrice(total)} €</TableCell>
+                            <TableCell align="right">{getPrice(props.total)} €</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
-
-            <FormControl fullWidth sx={{ margin: 5 }}>
-                <InputLabel id="demo-simple-select-label">Shipping Options</InputLabel>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={selectedShippingMethod}
-                    label="Shipping Options"
-                    onChange={handleShippingChange}
-                >
-                    {shippingMethods.map((type) => (
-                        <MenuItem key={`shipping-${type}`} value={type}>
-                            {type}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-
-            <Container>
-                <Typography variant="h5">Order summary</Typography>
-                <TableContainer>
-                    <Table>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>Order Subtotal</TableCell>
-                                <TableCell align="right">{getPrice(total)} €</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>Taxes</TableCell>
-                                <TableCell align="right">----</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>Shipping</TableCell>
-                                <TableCell align="right">----</TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-
-                <FormControl>
-                    <FormLabel id="demo-radio-buttons-group-label">Payment Method</FormLabel>
-                    <RadioGroup
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        defaultValue={paymentMethods[0]}
-                        name="radio-buttons-group"
-                        onChange={handlePaymentChange}
-                    >
-                        {paymentMethods.map((method) => (
-                            <FormControlLabel
-                                key={`payment-${method}`}
-                                value={method}
-                                control={<Radio />}
-                                label={method}
-                            />
-                        ))}
-                    </RadioGroup>
-                </FormControl>
-
-                <Button variant="contained" sx={{ margin: 2 }} onClick={sendOrder}>
-                    Submit
-                </Button>
-                {error && <Typography>{error}</Typography>}
-            </Container>
         </Container>
     );
 }
+Cart.propTypes = {
+    total: PropTypes.number,
+    setTotal: PropTypes.function,
+};
