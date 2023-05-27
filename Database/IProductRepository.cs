@@ -10,4 +10,5 @@ public interface IProductRepository
     Task<Product> Add(Product entity);
     Task<Result<Guid>> Delete(Guid id);
     Task SaveChanges();
+    Task<Result<Guid>> DeleteFirstException();
 }

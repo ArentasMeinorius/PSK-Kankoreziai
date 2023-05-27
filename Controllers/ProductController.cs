@@ -69,7 +69,22 @@ public class ProductController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> Delete(Guid id)
     {
+        await Task.Delay(TimeSpan.FromSeconds(10)); // Asynchronous communication requirement
         var result = await _service.Delete(id);
+        if (result.IsFailed)
+        {
+            return StatusCode(400, result.Reasons);
+        }
+        return Ok(result.Value);
+    }
+
+    [HttpDelete]
+    [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Produces("application/json")]
+    public async Task<IActionResult> DeleteFirstException()
+    {
+        var result = await _service.DeleteFirstException();
         if (result.IsFailed)
         {
             return StatusCode(400, result.Reasons);

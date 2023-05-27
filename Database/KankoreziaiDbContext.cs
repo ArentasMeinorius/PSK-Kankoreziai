@@ -75,7 +75,8 @@ public class KankoreziaiDbContext : DbContext
             new Thumbnail("https://www.theflowerweb.com.au/wp-content/uploads/2019/01/single-rose.jpg"),
             new Pictures(new List<string> { "https://cdn.shopify.com/s/files/1/0073/4740/4882/products/IMG_8409_5000x.jpg?v=1653807371", "https://i.pinimg.com/originals/83/1f/af/831faf53e6bb6a551ef030e968b9f42b.jpg" }),
             new Quantity(5),
-            ProductCategory.Flower);
+            ProductCategory.Flower,
+            ProductSeason.AllSeason);
         var product2 = new Product(
             Guid.NewGuid(),
             "Daisy",
@@ -84,7 +85,8 @@ public class KankoreziaiDbContext : DbContext
             new Thumbnail("https://springbreakisland-de.ams3.digitaloceanspaces.com/woocommerce-placeholder.png"),
             new Pictures(new List<string> { "https://springbreakisland-de.ams3.digitaloceanspaces.com/woocommerce-placeholder.png", "https://springbreakisland-de.ams3.digitaloceanspaces.com/woocommerce-placeholder.png" }),
             new Quantity(12),
-            ProductCategory.Flower);
+            ProductCategory.Flower,
+            ProductSeason.Autumn);
 
 
         var order1 = new Order(Guid.NewGuid(), new List<OrderProduct> { }, OrderStatus.PaymentAccepted, DateTime.UtcNow, DateTime.UtcNow);

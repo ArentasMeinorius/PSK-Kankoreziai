@@ -37,7 +37,7 @@ namespace Kankoreziai.Services.Users
             {
                 return false;
             }
-            return HasPermission(userResult.Value, permission); 
+            return HasPermission(userResult.Value, permission);
         }
 
         public async Task<User> GetOrCreate(string email)
