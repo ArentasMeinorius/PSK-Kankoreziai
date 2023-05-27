@@ -25,7 +25,7 @@ namespace Kankoreziai.Database
                 .FirstOrDefaultAsync(cart => cart.Guid == id);
             if (item == null)
             {
-                return Result.Fail("Did not find order");
+                return Result.Fail("Did not find cart");
             }
             return Result.Ok(item);
         }
