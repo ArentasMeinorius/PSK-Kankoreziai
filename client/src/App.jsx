@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Landing from './views/Landing';
 import ItemPage from './views/ItemPage/ItemPage';
 import CartPage from './views/cart/CartPage';
@@ -62,6 +62,27 @@ function App() {
                         <Route path="/cart" element={<CartPage />} />
                         <Route path="/item" element={<ProductsList />} />
                         <Route path="/order/status" element={<OrderStatus />} />
+                        <Route path="/admin/item/:id" element={
+                            <RequireAdminAuth>
+                            <AdminEditItem />
+                            </RequireAdminAuth>} />
+                        <Route path="/admin/item/new" element={
+                            <RequireAdminAuth>
+                            <AdminNewItem />
+                            </RequireAdminAuth>} />
+                        <Route path="/admin/order" element={
+                            <RequireAdminAuth>
+                            <AdminOrderList />
+                            </RequireAdminAuth>} />
+                        <Route path="/admin/order/:id" element={
+                            <RequireAdminAuth>
+                            <AdminEditOrder />
+                            </RequireAdminAuth>} />
+                        <Route path="/admin/item" element={
+                            <RequireAdminAuth>
+                            <AdminItemList />
+                            </RequireAdminAuth>
+                        } />
                     </Routes>
                     <AdminRoutes />
                 </Router>
