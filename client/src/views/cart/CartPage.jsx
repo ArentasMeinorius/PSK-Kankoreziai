@@ -6,13 +6,19 @@ import { Grid } from '@mui/material';
 
 export default function CartPage() {
     const [total, setTotal] = useState(0);
+    const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
+
     return (
         <Grid container>
-            <Grid item sx={8}>
-                <Cart total={total} setTotal={setTotal} />
+            <Grid item xs={8}>
+                <Cart total={total} setTotal={setTotal} isOrderSubmitted={isOrderSubmitted} />
             </Grid>
-            <Grid item sx={4}>
-                <Checkout totalPrice={total} />
+            <Grid item xs={4}>
+                <Checkout
+                    totalPrice={total}
+                    isOrderSubmitted={isOrderSubmitted}
+                    setIsOrderSubmitted={setIsOrderSubmitted}
+                />
             </Grid>
         </Grid>
     );

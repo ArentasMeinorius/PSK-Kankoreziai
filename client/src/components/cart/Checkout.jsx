@@ -18,13 +18,16 @@ import {
     TableCell,
     Typography,
 } from '@mui/material';
+import { useAuth } from '../../authentication/useAuth';
 
-const Checkout = ({ totalPrice, authKey }) => {
+const Checkout = (props) => {
+    // eslint-disable-next-line no-unused-vars
+    const [isAuthenticated, credentials, authKey, callLogin, callLogout] = useAuth();
     const [error, setError] = useState();
-    const shippingMethods = ['Pick up in store'];
-    const [selectedShippingMethod, setSelectedShippingMethod] = useState(shippingMethods[0]);
 
+    const shippingMethods = ['Pick up in store'];
     const paymentMethods = ['Pay in the shop'];
+    const [selectedShippingMethod, setSelectedShippingMethod] = useState(shippingMethods[0]);
     // eslint-disable-next-line no-unused-vars
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0]);
     const handleShippingChange = (event) => {
@@ -35,6 +38,7 @@ const Checkout = ({ totalPrice, authKey }) => {
     };
 
     const sendOrder = () => {
+        props.setIsOrderSubmitted(true);
         fetch('http://localhost:5000/order/cart', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authKey}` },
@@ -49,15 +53,23 @@ const Checkout = ({ totalPrice, authKey }) => {
         });
     };
 
+    if (props.isOrderSubmitted) {
+        return (
+            <Container>
+                <Typography variant="h4">Thank you for ordering!</Typography>
+            </Container>
+        );
+    }
+
     return (
-        <Container>
+        <Container sx={authKey ? {} : { display: 'none' }}>
             <Typography variant="h5">Order summary</Typography>
             <TableContainer>
                 <Table>
                     <TableBody>
                         <TableRow>
                             <TableCell>Order Subtotal</TableCell>
-                            <TableCell align="right">{totalPrice / 100} €</TableCell>
+                            <TableCell align="right">{props.totalPrice / 100} €</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Taxes</TableCell>
@@ -100,8 +112,12 @@ const Checkout = ({ totalPrice, authKey }) => {
                     ))}
                 </RadioGroup>
             </FormControl>
-
-            <Button variant="contained" sx={{ width: '100%', marginTop: 2 }} onClick={sendOrder}>
+            <Button
+                disabled={props.totalPrice <= 0}
+                variant="contained"
+                sx={{ width: '100%', marginTop: 2 }}
+                onClick={sendOrder}
+            >
                 Submit Order
             </Button>
             {error && <Typography>{error}</Typography>}
@@ -111,7 +127,8 @@ const Checkout = ({ totalPrice, authKey }) => {
 
 Checkout.propTypes = {
     totalPrice: PropTypes.number,
-    authKey: PropTypes.string,
+    isOrderSubmitted: PropTypes.bool,
+    setIsOrderSubmitted: PropTypes.func,
 };
 
 export default Checkout;

@@ -78,7 +78,7 @@ export default function Cart(props) {
         return <Typography variant="h4">Please login to see your cart</Typography>;
     }
 
-    if (cart.length === 0) {
+    if (props.isOrderSubmitted || cart.length === 0) {
         return (
             <Container>
                 <Typography variant="h4">Your cart is empty</Typography>
@@ -95,9 +95,9 @@ export default function Cart(props) {
     }
 
     return (
-        <Container sx={{ display: 'flex' }}>
+        <Container>
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: '50%' }} aria-label="spanning table">
+                <Table sx={{ minWidth: '650' }} aria-label="spanning table">
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
@@ -148,5 +148,6 @@ export default function Cart(props) {
 }
 Cart.propTypes = {
     total: PropTypes.number,
-    setTotal: PropTypes.function,
+    setTotal: PropTypes.func,
+    isOrderSubmitted: PropTypes.bool,
 };
