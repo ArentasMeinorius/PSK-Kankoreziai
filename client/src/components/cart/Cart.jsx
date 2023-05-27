@@ -11,6 +11,14 @@ import {
     TableBody,
     Button,
     ButtonGroup,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Select,
+    FormLabel,
+    RadioGroup,
+    Radio,
+    FormControlLabel,
 } from '@mui/material';
 import { removeFromCart } from '../../cart/cartHandler';
 
@@ -18,6 +26,48 @@ export default function Cart() {
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
     const [isCartSet, setIsCartSet] = useState(false);
+
+    const shippingMethods = ['Pick up in store'];
+    const [selectedShippingMethod, setSelectedShippingMethod] = useState(shippingMethods[0]);
+
+    const paymentMethods = ['Pay in the shop'];
+    // eslint-disable-next-line no-unused-vars
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0]);
+    // eslint-disable-next-line no-unused-vars
+    const [error, setError] = React.useState('');
+
+    const handleShippingChange = (event) => {
+        setSelectedShippingMethod(event.target.value);
+    };
+
+    const handlePaymentChange = (event) => {
+        setSelectedPaymentMethod(event.target.value);
+    };
+
+    const sendOrder = () => {
+        const orderBody = {
+            itemsInOrder: cart.map((product) => ({
+                productId: product.item.id,
+                quantity: product.item.quantity,
+            })),
+            orderStatus: 0,
+        };
+        console.log(orderBody);
+
+        fetch('http://localhost:5000/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderBody),
+        }).then((response) => {
+            if (response.ok) {
+                //nav to orders? if we have such page
+            } else {
+                return response.text().then((text) => {
+                    setError(text);
+                });
+            }
+        });
+    };
 
     useEffect(() => {
         let cart = localStorage.getItem('cart');
@@ -75,7 +125,6 @@ export default function Cart() {
             </Container>
         );
     }
-
     return (
         <Container>
             <TableContainer component={Paper}>
@@ -125,6 +174,69 @@ export default function Cart() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <FormControl fullWidth sx={{ margin: 5 }}>
+                <InputLabel id="demo-simple-select-label">Shipping Options</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={selectedShippingMethod}
+                    label="Shipping Options"
+                    onChange={handleShippingChange}
+                >
+                    {shippingMethods.map((type) => (
+                        <MenuItem key={`shipping-${type}`} value={type}>
+                            {type}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            <Container>
+                <Typography variant="h5">Order summary</Typography>
+                <TableContainer>
+                    <Table>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>Order Subtotal</TableCell>
+                                <TableCell align="right">{getPrice(total)} €</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Taxes</TableCell>
+                                <TableCell align="right">----</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Shipping</TableCell>
+                                <TableCell align="right">----</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
+                <FormControl>
+                    <FormLabel id="demo-radio-buttons-group-label">Payment Method</FormLabel>
+                    <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        defaultValue={paymentMethods[0]}
+                        name="radio-buttons-group"
+                        onChange={handlePaymentChange}
+                    >
+                        {paymentMethods.map((method) => (
+                            <FormControlLabel
+                                key={`payment-${method}`}
+                                value={method}
+                                control={<Radio />}
+                                label={method}
+                            />
+                        ))}
+                    </RadioGroup>
+                </FormControl>
+
+                <Button variant="contained" sx={{ margin: 2 }} onClick={sendOrder}>
+                    Submit
+                </Button>
+                {error && <Typography>{error}</Typography>}
+            </Container>
         </Container>
     );
 }
