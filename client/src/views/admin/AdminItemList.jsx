@@ -21,18 +21,15 @@ export default function AdminItemList() {
     return (
         <Container>
             <AdminHeader/>
-            <Grid container wrap={"nowrap"} sx={{
-                overflow: "auto"
-            }}>
+            <Grid container >
             {products.map((product) => {
                 return (
-                    <Grid key={product.id} item xs={6} wrap={"nowrap"} spacing={4} sx={{
+                    <Grid key={product.id} item xs={6} wrap={"nowrap"} spacing={2} sx={{
                         border: 1,
                         borderColor: 'primary.main',
                         borderRadius: '16px',
-                        mt: 1,
-                        mx: 1,
-                        overflow: 'auto'
+                        mt: 1
+       
                     }}>
                         <AdminItem product={product} />
                     </Grid>

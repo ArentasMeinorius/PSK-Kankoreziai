@@ -103,8 +103,8 @@ export const AdminItem = ({product}) => {
                     </ButtonBase>
                 </Grid>
                 <Grid item xs={8}>
-                    <Typography variant={"h5"}>{product.name}</Typography>
-                    <Typography>{product.description}</Typography>
+                    <Typography style={{ wordWrap: "break-word" }} variant={"h5"}>{product.name}</Typography>
+                    <Typography style={{ wordWrap: "break-word" }}>{product.description}</Typography>
                 </Grid>
                 <Grid item xs={4}>
                 </Grid>
