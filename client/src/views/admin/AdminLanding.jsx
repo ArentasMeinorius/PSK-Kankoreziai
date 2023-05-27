@@ -1,6 +1,8 @@
 import React from 'react';
-import { Button, Container } from '@mui/material';
+import {Button, Container, Typography} from '@mui/material';
 import useAuthWithPermissions from '../../authentication/useAuthWithPermissions';
+import {AdminHeader} from "../../components/admin/AdminHeader";
+import LoginButton from "../../components/auth/LoginButton";
 
 export default function AdminLanding() {
     // eslint-disable-next-line no-unused-vars
@@ -12,8 +14,11 @@ export default function AdminLanding() {
     if (!isAuthenticated) {
         return (
             <Container>
-                <h1>Admin Landing Page</h1>
-                <p>You are not logged in.</p>
+                <Typography variant={"h5"} sx={{
+                    mt: 2
+                }}>Admin Landing Page</Typography>
+                <Typography>You are not logged in.</Typography>
+                <LoginButton/>
             </Container>
         );
     }
@@ -21,8 +26,10 @@ export default function AdminLanding() {
     if (!hasPermissions) {
         return (
             <Container>
-                <h1>Admin Landing Page</h1>
-                <p>You do not have permission to view this page.</p>
+                <Typography variant={"h5"} sx={{
+                    mt: 2
+                }}>Admin Landing Page</Typography>
+                <Typography>You do not have permission to view this page.</Typography>
                 <Button onClick={callLogout}>Logout</Button>
             </Container>
         );
@@ -30,7 +37,10 @@ export default function AdminLanding() {
 
     return (
         <Container>
-            <h1>Admin Landing Page</h1>
+            <AdminHeader/>
+            <Typography variant={"h5"} sx={{
+                mt: 2
+            }}>Admin Landing Page</Typography>
             <Button onClick={callLogout}>Logout</Button>
         </Container>
     );

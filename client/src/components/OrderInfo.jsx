@@ -9,6 +9,7 @@ const OrderInfo = ({order}) => {
     };
 
     const orderStatus = [
+        'Created',
         'Awaiting Payment',
         'Payment Accepted',
         'Payment Rejected',
