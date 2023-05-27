@@ -11,7 +11,6 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router';
 import LoginButton from './auth/LoginButton';
-import {Link} from "@mui/material";
 
 const defaultPages = [
     {
@@ -86,16 +85,14 @@ const Navbar = () => {
                             ))}
                         </Menu>
                     </Box>
-                    <Link
+                    <Typography
                         variant="h6"
                         noWrap
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
-                        href={'/'}
-                        underline={"none"}
                     >
                         FLOWER SHOP
-                    </Link>
+                    </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {defaultPages.map((page) => (
                             <Button
