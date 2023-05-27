@@ -105,7 +105,6 @@ export const EditItem = ({currentProduct, newItem}) => {
                 if(!response.ok) {
                     return response.text().then(text => { setError(text)});
                 }
-                throw response;
             });
     }
 
