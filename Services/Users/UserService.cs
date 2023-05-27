@@ -8,9 +8,11 @@ namespace Kankoreziai.Services.Users
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        public UserService(IUserRepository userRepository)
+        private readonly ICartRepository _cartRepository;
+        public UserService(IUserRepository userRepository, ICartRepository cartRepository)
         {
             _userRepository = userRepository;
+            _cartRepository = cartRepository;
         }
 
         public Task<Result<User>> Get(Guid id)
@@ -35,7 +37,7 @@ namespace Kankoreziai.Services.Users
             {
                 return false;
             }
-            return HasPermission(userResult.Value, permission); 
+            return HasPermission(userResult.Value, permission);
         }
 
         public async Task<User> GetOrCreate(string email)
@@ -47,12 +49,19 @@ namespace Kankoreziai.Services.Users
                 return userResult.Value;
             }
 
+            var cart = new Cart(Guid.NewGuid());
+
             var user = new User
             {
                 Email = email,
-                Permissions = new List<string>()
+                Permissions = new List<string>(),
+                CartId = cart.Guid
             };
+
+            await _cartRepository.Add(cart);
             await _userRepository.Add(user);
+
+            await _cartRepository.SaveChanges();
             await _userRepository.SaveChanges();
             return user;
 

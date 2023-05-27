@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Kankoreziai.Services.Users;
 using Kankoreziai.Models;
-using Kankoreziai.Services;
 using Serilog;
+using Kankoreziai.Services.Authentication;
 
 namespace Kankoreziai.Controllers
 {
@@ -13,13 +13,11 @@ namespace Kankoreziai.Controllers
     [Route("[controller]/[action]")]
     public class UserController : Controller
     {
-        private readonly KankoreziaiDbContext _context;
         private readonly IUserService _userService;
         private IAuthenticationService _authenticationService;
 
-        public UserController(KankoreziaiDbContext kankoreziaiDbContext, IUserService userService, IAuthenticationService authenticationService)
+        public UserController(IUserService userService, IAuthenticationService authenticationService)
         {
-            _context = kankoreziaiDbContext;
             _userService = userService;
             _authenticationService = authenticationService;
         }
