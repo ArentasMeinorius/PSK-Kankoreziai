@@ -8,6 +8,7 @@ import { green } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Navbar from './components/Navbar.jsx';
 import { Box } from '@mui/material';
+import OrderStatus from "./views/OrderStatus";
 import ProductsList from "./views/ProductsList";
 
 
@@ -33,6 +34,7 @@ function App() {
                         <Route path="/admin" element={<AdminLanding />} />
                         <Route path="/cart" element={<CartPage />} />
                         <Route path="/item" element={<ProductsList />} />
+                        <Route path="/order/status" element={<OrderStatus />} />
                     </Routes>
                 </Router>
             </ThemeProvider>

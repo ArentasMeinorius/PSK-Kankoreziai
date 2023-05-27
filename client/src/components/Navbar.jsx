@@ -21,6 +21,10 @@ const defaultPages = [
         title: 'Products',
         redirect: '/item',
     },
+    {
+        title: 'Check order status',
+        redirect: '/order/status',
+    },
 ];
 
 const Navbar = () => {
