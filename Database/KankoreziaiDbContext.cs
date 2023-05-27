@@ -102,7 +102,7 @@ public class KankoreziaiDbContext : DbContext
         var admin = new User
         {
             Email = "testadmin@gmail.com",
-            Permissions = new(new[] { "items.see", "items.manage", "products.create", "orders.all" }),
+            Permissions = new(new[] { "orders.fetchall", "orders.edit", "orders.delete", "products.create", "products.update", "products.delete", "adminpanel.access" }),
             CartId = cart.Guid
         };
 

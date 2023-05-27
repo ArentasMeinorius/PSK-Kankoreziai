@@ -9,25 +9,8 @@ const OrderStatus = () => {
     const [orderId, setOrderId] = React.useState(searchParams.get('id'));
     const [order, setOrder] = React.useState(null);
     const [error, setError] = React.useState('');
-
     // eslint-disable-next-line no-unused-vars
     const [isAuthenticated, credentials, authKey, callLogin, callLogout] = useAuth();
-
-    if (!isAuthenticated) {
-        return (
-            <Container>
-                <Typography
-                    variant={'h4'}
-                    sx={{
-                        mb: 2,
-                    }}
-                >
-                    Check your order status
-                </Typography>
-                <Typography variant={'body1'}>To see order status you need to be logged in.</Typography>
-            </Container>
-        );
-    }
 
     const getOrder = (id) => {
         fetch(`http://localhost:5000/order/${id}`, {
@@ -63,6 +46,22 @@ const OrderStatus = () => {
         if (orderId) getOrder(orderId);
         setSearchParams({ ['id']: orderId });
     };
+
+    if (!isAuthenticated) {
+        return (
+            <Container>
+                <Typography
+                    variant={'h4'}
+                    sx={{
+                        mb: 2,
+                    }}
+                >
+                    Check your order status
+                </Typography>
+                <Typography variant={'body1'}>To see order status you need to be logged in.</Typography>
+            </Container>
+        );
+    }
 
     return (
         <Container>

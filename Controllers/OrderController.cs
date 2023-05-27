@@ -22,7 +22,7 @@ public class OrderController : Controller
     [HttpGet("all")]
     [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
     [Produces("application/json")]
-    [RequiresAuthentication("orders.all")]
+    [RequiresAuthentication("orders.fetchall")]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _service.GetAll());

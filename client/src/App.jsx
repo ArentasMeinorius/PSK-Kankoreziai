@@ -1,8 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Landing from './views/Landing';
 import ItemPage from './views/ItemPage/ItemPage';
-import AdminLanding from './views/admin/AdminLanding';
 import CartPage from './views/cart/CartPage';
 import { green } from '@mui/material/colors';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -15,7 +14,7 @@ import AdminEditItem from './views/admin/AdminEditItem';
 import AdminNewItem from './views/admin/AdminNewItem';
 import AdminOrderList from './views/admin/AdminOrderList';
 import AdminEditOrder from './views/admin/AdminEditOrder';
-import PropTypes from 'prop-types';
+import useAuthWithPermissions from './authentication/useAuthWithPermissions';
 
 const theme = createTheme({
     palette: {
@@ -26,28 +25,29 @@ const theme = createTheme({
     },
 });
 
-function RequireAdminAuth({ children }) {
-    const hasPermission = async (permission, token) => {
-        const response = await fetch(`http://localhost:5000/user/haspermission?permission=${permission}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        const hasAccess = await response.json();
-        if (!hasAccess) {
-            return false;
-        }
-        return true;
-    };
-    const token = localStorage.getItem('authKey');
-    const adminPermissions = hasPermission(['items.see', 'items.manage', 'products.create'], token);
-    return token && adminPermissions ? children : <Navigate to="/admin" replace />;
+function AdminRoutes() {
+    // eslint-disable-next-line no-unused-vars
+    const [isAuthenticated, credentials, authKey, hasPermissions, callLogin, callLogout] = useAuthWithPermissions([
+        'adminpanel.access',
+    ]);
+    if (isAuthenticated && hasPermissions) {
+        console.log(authKey);
+        return (
+            <Routes>
+                <Route path="/admin/item/:id" element={<AdminEditItem authKey={authKey} />} />
+                <Route path="/admin/item/new" element={<AdminNewItem authKey={authKey} />} />
+                <Route path="/admin/order" element={<AdminOrderList authKey={authKey} />} />
+                <Route path="/admin/order/:id" element={<AdminEditOrder authKey={authKey} />} />
+                <Route path="/admin/item" element={<AdminItemList authKey={authKey} />} />
+            </Routes>
+        );
+    }
+    return (
+        <Routes>
+            <Route path="/admin/*" element={<></>} />
+        </Routes>
+    );
 }
-
-RequireAdminAuth.propTypes = {
-    children: PropTypes.object,
-};
 
 function App() {
     return (
@@ -59,51 +59,11 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Landing />} />
                         <Route path="/item/:id" element={<ItemPage />} />
-                        <Route path="/admin" element={<AdminLanding />} />
                         <Route path="/cart" element={<CartPage />} />
                         <Route path="/item" element={<ProductsList />} />
                         <Route path="/order/status" element={<OrderStatus />} />
-                        <Route
-                            path="/admin/item/:id"
-                            element={
-                                <RequireAdminAuth>
-                                    <AdminEditItem />
-                                </RequireAdminAuth>
-                            }
-                        />
-                        <Route
-                            path="/admin/item/new"
-                            element={
-                                <RequireAdminAuth>
-                                    <AdminNewItem />
-                                </RequireAdminAuth>
-                            }
-                        />
-                        <Route
-                            path="/admin/order"
-                            element={
-                                <RequireAdminAuth>
-                                    <AdminOrderList />
-                                </RequireAdminAuth>
-                            }
-                        />
-                        <Route
-                            path="/admin/order/:id"
-                            element={
-                                <RequireAdminAuth>
-                                    <AdminEditOrder />
-                                </RequireAdminAuth>
-                            }
-                        />
-                        <Route
-                            path="/admin/item"
-                            element={
-                                <RequireAdminAuth>
-                                    <AdminItemList />
-                                </RequireAdminAuth>
-                            }
-                        />
                     </Routes>
+                    <AdminRoutes />
                 </Router>
             </ThemeProvider>
         </>
