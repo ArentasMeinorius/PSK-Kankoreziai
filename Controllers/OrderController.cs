@@ -1,19 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Kankoreziai.Models;
 using Kankoreziai.Services;
-
+using Kankoreziai.Attributes.Authentication;
+using Kankoreziai.Services.Authentication;
 
 namespace Kankoreziai.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _service;
+    private readonly IAuthenticationService _authenticationService;
 
-    public OrderController(IOrderService orderService)
+    public OrderController(IOrderService orderService, IAuthenticationService authenticationService)
     {
         _service = orderService;
+        _authenticationService = authenticationService;
     }
 
     [HttpGet]
@@ -45,6 +48,27 @@ public class OrderController : ControllerBase
     public async Task<IActionResult> Post(OrderDto newEntity)
     {
         var result = await _service.Add(newEntity);
+        if (result.IsFailed)
+        {
+            return StatusCode(400, result.Reasons);
+        }
+        return Ok(result.Value);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+    [Produces("application/json")]
+    [ActionName("cart")]
+    [RequiresAuthentication]
+    public async Task<IActionResult> PostFromUserCart()
+    {
+        var user = _authenticationService.User;
+        if(user == null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _service.MakeOrderFromCart(user.CartId);
         if (result.IsFailed)
         {
             return StatusCode(400, result.Reasons);

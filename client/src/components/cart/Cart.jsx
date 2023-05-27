@@ -20,13 +20,13 @@ import {
     Radio,
     FormControlLabel,
 } from '@mui/material';
-import { removeFromCart } from '../../cart/cartHandler';
+import { useCart } from '../../cart/useCart';
+import { useAuth } from '../../authentication/useAuth';
 
 export default function Cart() {
-    const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
-    const [isCartSet, setIsCartSet] = useState(false);
 
+    const [error, setError] = useState();
     const shippingMethods = ['Pick up in store'];
     const [selectedShippingMethod, setSelectedShippingMethod] = useState(shippingMethods[0]);
 
@@ -34,7 +34,6 @@ export default function Cart() {
     // eslint-disable-next-line no-unused-vars
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(paymentMethods[0]);
     // eslint-disable-next-line no-unused-vars
-    const [error, setError] = React.useState('');
 
     const handleShippingChange = (event) => {
         setSelectedShippingMethod(event.target.value);
@@ -68,7 +67,7 @@ export default function Cart() {
             }
         });
     };
-
+    /*
     useEffect(() => {
         let cart = localStorage.getItem('cart');
         if (cart) {
@@ -76,25 +75,33 @@ export default function Cart() {
         }
         setIsCartSet(true);
     }, []);
+*/
+    // eslint-disable-next-line no-unused-vars
+    const [isAuthenticated, credentials, authKey, callLogin, callLogout] = useAuth();
+    // eslint-disable-next-line no-unused-vars
+    const [cart, isLoaded, cartError, addToCart, removeFromCart, setQuantity] = useCart();
+    const [products, setProducts] = useState([]);
 
-    useEffect(() => {
-        if (!isCartSet) {
-            return;
-        }
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
-
-    useEffect(() => {
-        let total = 0;
-        cart.forEach((cartElement) => {
-            total += cartElement.item.price.cents * cartElement.quantity;
+    async function getProductById(guid) {
+        const product = await fetch(`http://localhost:5000/product/${guid}`).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw response;
         });
-        setTotal(total);
-    }, [cart]);
+        return product;
+    }
 
-    const removeItemFromCart = (elementToRemove) => {
-        removeFromCart(elementToRemove);
-        setCart(JSON.parse(localStorage.getItem('cart')));
+    useEffect(() => {
+        let tempTotal = 0;
+        for (var i = 0; i < products.length; i++) {
+            tempTotal += products[i].price.cents * cart[i].quantity.units;
+        }
+        setTotal(tempTotal);
+    }, [products]);
+
+    const removeItemFromCart = (cartElement) => {
+        removeFromCart(cartElement);
     };
 
     function getPrice(cents) {
@@ -102,20 +109,32 @@ export default function Cart() {
     }
 
     function increaseQuantity(cartElement) {
-        const tempCart = [...cart];
-        const index = tempCart.indexOf(cartElement);
-        tempCart[index].quantity++;
-        setCart(tempCart);
+        console.log('increaseQuantity');
+        setQuantity(cartElement, cartElement.quantity.units + 1);
     }
 
     function decreaseQuantity(cartElement) {
-        const tempCart = [...cart];
-        const index = tempCart.indexOf(cartElement);
-        tempCart[index].quantity--;
-        if (tempCart[index].quantity <= 0) {
-            tempCart.splice(index, 1);
+        console.log('dec');
+        if (cartElement.quantity.units <= 1) {
+            setQuantity(cartElement, 1);
         }
-        setCart(tempCart);
+        setQuantity(cartElement, cartElement.quantity.units - 1);
+    }
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const tempProducts = [];
+            for (const cartElement of cart) {
+                const product = await getProductById(cartElement.productId);
+                tempProducts.push(product);
+            }
+            setProducts(tempProducts);
+        };
+        fetchProducts();
+    }, [cart]);
+
+    if (!isAuthenticated) {
+        return <Typography variant="h4">Please login to see your cart</Typography>;
     }
 
     if (cart.length === 0) {
@@ -125,6 +144,17 @@ export default function Cart() {
             </Container>
         );
     }
+
+    if (products.length != cart.length) {
+        return (
+            <Container>
+                <Typography variant="h4">Loading...</Typography>
+            </Container>
+        );
+    }
+
+    console.log(products);
+
     return (
         <Container>
             <TableContainer component={Paper}>
@@ -141,24 +171,24 @@ export default function Cart() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {cart.map((cartElement, index) => (
-                            <TableRow key={cartElement.item.id}>
+                        {products.map((product, index) => (
+                            <TableRow key={product.id}>
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell align="right">{cartElement.item.name}</TableCell>
-                                <TableCell align="right">{cartElement.item.description}</TableCell>
-                                <TableCell align="right">{getPrice(cartElement.item.price.cents)} €</TableCell>
+                                <TableCell align="right">{product.name}</TableCell>
+                                <TableCell align="right">{product.description}</TableCell>
+                                <TableCell align="right">{getPrice(product.price.cents)} €</TableCell>
                                 <TableCell align="center">
                                     <ButtonGroup size="small" aria-label="small outlined button group">
-                                        <Button onClick={() => decreaseQuantity(cartElement)}>-</Button>
-                                        <Button disabled>{cartElement.quantity}</Button>
-                                        <Button onClick={() => increaseQuantity(cartElement)}>+</Button>
+                                        <Button onClick={() => decreaseQuantity(cart[index])}>-</Button>
+                                        <Button disabled>{cart[index].quantity.units}</Button>
+                                        <Button onClick={() => increaseQuantity(cart[index])}>+</Button>
                                     </ButtonGroup>
                                 </TableCell>
                                 <TableCell align="right">
-                                    {getPrice(cartElement.item.price.cents * cartElement.quantity)} €
+                                    {getPrice(product.price.cents * cart[index].quantity.units)} €
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Button variant="contained" onClick={() => removeItemFromCart(cartElement.item)}>
+                                    <Button variant="contained" onClick={() => removeItemFromCart(cart[index])}>
                                         Remove
                                     </Button>
                                 </TableCell>

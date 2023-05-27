@@ -1,4 +1,5 @@
-﻿using Kankoreziai.Database;
+﻿using FluentResults;
+using Kankoreziai.Database;
 using Kankoreziai.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,20 +7,22 @@ namespace Kankoreziai.Services.Users
 {
     public class UserService : IUserService
     {
-        private readonly KankoreziaiDbContext _context;
-        public UserService(KankoreziaiDbContext kankoreziaiDbContext)
+        private readonly IUserRepository _userRepository;
+        private readonly ICartRepository _cartRepository;
+        public UserService(IUserRepository userRepository, ICartRepository cartRepository)
         {
-            _context = kankoreziaiDbContext;
+            _userRepository = userRepository;
+            _cartRepository = cartRepository;
         }
 
-        public ValueTask<User?> GetUserAsync(int id)
+        public Task<Result<User>> Get(Guid id)
         {
-            return _context.Users.FindAsync(id);
+            return _userRepository.Get(id);
         }
 
-        public Task<User?> GetUserAsync(string email)
+        public Task<Result<User>> Get(string email)
         {
-            return _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+            return _userRepository.Get(email);
         }
 
         public bool HasPermission(User user, string permission)
@@ -29,12 +32,39 @@ namespace Kankoreziai.Services.Users
 
         public async Task<bool> HasPermissionAsync(string email, string permission)
         {
-            var user = await GetUserAsync(email);
-            if (user == null)
+            var userResult = await Get(email);
+            if (userResult.IsFailed)
             {
                 return false;
             }
-            return HasPermission(user, permission); 
+            return HasPermission(userResult.Value, permission);
+        }
+
+        public async Task<User> GetOrCreate(string email)
+        {
+            var userResult = await Get(email);
+
+            if (userResult.IsSuccess)
+            {
+                return userResult.Value;
+            }
+
+            var cart = new Cart(Guid.NewGuid());
+
+            var user = new User
+            {
+                Email = email,
+                Permissions = new List<string>(),
+                CartId = cart.Guid
+            };
+
+            await _cartRepository.Add(cart);
+            await _userRepository.Add(user);
+
+            await _cartRepository.SaveChanges();
+            await _userRepository.SaveChanges();
+            return user;
+
         }
     }
 }

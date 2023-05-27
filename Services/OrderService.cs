@@ -8,13 +8,16 @@ public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
+    private readonly ICartRepository _cartRepository;
 
     public OrderService(
         IOrderRepository orderRepository,
-        IProductRepository productRepository)
+        IProductRepository productRepository,
+        ICartRepository cartRepository)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
+        _cartRepository = cartRepository;
     }
 
     public Task<List<Order>> GetAll()
@@ -99,4 +102,30 @@ public class OrderService : IOrderService
             DateTime.UtcNow,
             DateTime.UtcNow);
     }
+
+    public async Task<Result<Order>> MakeOrderFromCart(Guid cartId)
+    {
+        var cart = await _cartRepository.Get(cartId);
+        if (cart.IsFailed)
+        {
+            return Result.Fail(cart.Reasons.Select(x => x.Message));
+        }
+
+        var order = await MakeOrder(new OrderDto
+        (
+            cart.Value.CartItems.Select(x => new ItemInOrder(x.ProductId, x.Quantity)).ToList(),
+            OrderStatus.AwaitingPayment
+        ));
+
+        if (order.IsFailed)
+        {
+            return Result.Fail(order.Reasons.Select(x => x.Message));
+        }
+
+        cart.Value.CartItems.Clear();
+        await _cartRepository.SaveChanges();
+
+        return order;
+    }
+
 }

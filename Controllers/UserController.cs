@@ -3,6 +3,9 @@ using Kankoreziai.Database;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Kankoreziai.Services.Users;
+using Kankoreziai.Models;
+using Serilog;
+using Kankoreziai.Services.Authentication;
 
 namespace Kankoreziai.Controllers
 {
@@ -10,25 +13,26 @@ namespace Kankoreziai.Controllers
     [Route("[controller]/[action]")]
     public class UserController : Controller
     {
-        private readonly KankoreziaiDbContext _context;
         private readonly IUserService _userService;
-        public UserController(KankoreziaiDbContext kankoreziaiDbContext, IUserService userService)
+        private IAuthenticationService _authenticationService;
+
+        public UserController(IUserService userService, IAuthenticationService authenticationService)
         {
-            _context = kankoreziaiDbContext;
             _userService = userService;
+            _authenticationService = authenticationService;
         }
 
         [HttpGet]
         [ActionName("haspermission")]
-        [GoogleAuthentication]
-        public async Task<ActionResult<bool>> HasPermission([FromQuery] string permission)
+        [RequiresAuthentication]
+        public ActionResult<bool> HasPermission([FromQuery] string permission)
         {
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            if(userEmail == null)
+            var user = _authenticationService.User;
+            if (user == null)
             {
-                return BadRequest();
+                return false;
             }
-            return await _userService.HasPermissionAsync(userEmail, permission);
+            return _userService.HasPermission(user, permission);
         }
     }
 }
