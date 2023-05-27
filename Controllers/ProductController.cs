@@ -53,6 +53,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
+    [RequiresAuthentication("products.update")]
     public async Task<IActionResult> Put(Guid id, ProductDto newEntity)
     {
         var result = await _service.Update(id, newEntity);
@@ -67,6 +68,7 @@ public class ProductController : ControllerBase
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
+    [RequiresAuthentication("products.delete")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await Task.Delay(TimeSpan.FromSeconds(10)); // Asynchronous communication requirement
