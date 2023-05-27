@@ -14,12 +14,12 @@ import LoginButton from './auth/LoginButton';
 
 const defaultPages = [
     {
-        title: 'Landing',
-        redirect: '/',
-    },
-    {
         title: 'Cart',
         redirect: '/Cart',
+    },
+    {
+        title: 'Products',
+        redirect: '/item',
     },
 ];
 
@@ -43,9 +43,11 @@ const Navbar = () => {
         <AppBar position="fixed">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-                        FLOWER SHOP
-                    </Typography>
+                    <MenuItem onClick={() => handleClickRedirect('/')} color={"white"}>
+                        <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
+                            FLOWER SHOP
+                        </Typography>
+                    </MenuItem>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
