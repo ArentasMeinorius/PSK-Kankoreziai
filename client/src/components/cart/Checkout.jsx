@@ -17,6 +17,7 @@ import {
     TableRow,
     TableCell,
     Typography,
+    CircularProgress,
 } from '@mui/material';
 import { useAuth } from '../../authentication/useAuth';
 
@@ -24,6 +25,7 @@ const Checkout = (props) => {
     // eslint-disable-next-line no-unused-vars
     const [isAuthenticated, credentials, authKey, callLogin, callLogout] = useAuth();
     const [error, setError] = useState();
+    const [orderId, setOrderId] = useState(null);
 
     const shippingMethods = ['Pick up in store'];
     const paymentMethods = ['Pay in the shop'];
@@ -44,7 +46,11 @@ const Checkout = (props) => {
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authKey}` },
         }).then((response) => {
             if (response.ok) {
-                console.log(response);
+                return response.json().then((data) => {
+                    console.log(data.id);
+                    setOrderId(data.id);
+                    console.log(orderId);
+                });
             } else {
                 return response.text().then((text) => {
                     setError(text);
@@ -53,10 +59,23 @@ const Checkout = (props) => {
         });
     };
 
-    if (props.isOrderSubmitted) {
+    console.log(orderId);
+
+    if (props.isOrderSubmitted && orderId !== null) {
         return (
             <Container>
                 <Typography variant="h4">Thank you for ordering!</Typography>
+                <Typography variant="h6">Your order id is: {orderId}</Typography>
+            </Container>
+        );
+    }
+
+    if (props.isOrderSubmitted && orderId === null) {
+        return (
+            <Container>
+                <Typography variant="h4">Thank you for ordering!</Typography>
+                <Typography variant="h6">Processing order...</Typography>
+                <CircularProgress />
             </Container>
         );
     }

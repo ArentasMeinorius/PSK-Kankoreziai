@@ -11,7 +11,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router';
 import LoginButton from './auth/LoginButton';
-import AdminButton from "./admin/AdminButton";
+import AdminButton from './admin/AdminButton';
 
 const defaultPages = [
     {
@@ -48,8 +48,13 @@ const Navbar = () => {
         <AppBar position="fixed">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <MenuItem onClick={() => handleClickRedirect('/')} color={"white"}>
-                        <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
+                    <MenuItem onClick={() => handleClickRedirect('/')} color={'white'}>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+                        >
                             FLOWER SHOP
                         </Typography>
                     </MenuItem>

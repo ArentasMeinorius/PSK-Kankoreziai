@@ -2,10 +2,12 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Container, Grid, Input, Typography, useTheme } from '@mui/material';
 import { useCart } from '../../cart/useCart';
+import { useAuth } from '../../authentication/useAuth';
 
 const DescriptionComponent = ({ itemInfo }) => {
     const theme = useTheme();
     const [quantity, setQuantity] = React.useState(1);
+    const [isAuthenticated] = useAuth();
     // eslint-disable-next-line no-unused-vars
     const [cart, isLoaded, error, addToCart, removeFromCart, changeQuantity] = useCart();
 
@@ -36,25 +38,34 @@ const DescriptionComponent = ({ itemInfo }) => {
                     {itemInfo?.name}
                 </Typography>
                 <Typography variant="h6">Price: {getMoneyFromCents(itemInfo?.price?.cents)} €</Typography>
-                <Typography variant="body1" style={{ wordWrap: "break-word" }}>{itemInfo.description}</Typography>
+                <Typography variant="body1" style={{ wordWrap: 'break-word' }}>
+                    {itemInfo.description}
+                </Typography>
                 <Typography variant="h6">In stock: {itemInfo?.quantity?.units}</Typography>
-                <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                        <Input
-                            variant="outlined"
-                            type="number"
-                            placeholder="Quantity"
-                            onChange={handleQuantityChange}
-                            value={quantity}
-                            sx={{ color: 'white' }}
-                        />
+                {isAuthenticated && (
+                    <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                            <Input
+                                variant="outlined"
+                                type="number"
+                                placeholder="Quantity"
+                                onChange={handleQuantityChange}
+                                value={quantity}
+                                sx={{ color: 'white' }}
+                            />
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Button variant="contained" fullWidth onClick={() => addToCart(itemInfo, quantity)}>
+                                Add to cart
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={8}>
-                        <Button variant="contained" fullWidth onClick={() => addToCart(itemInfo, quantity)}>
-                            Add to cart
-                        </Button>
-                    </Grid>
-                </Grid>
+                )}
+                {!isAuthenticated && (
+                    <Typography variant="body1" style={{ wordWrap: 'break-word' }}>
+                        You need to be logged in to add items to cart.
+                    </Typography>
+                )}
             </Container>
         );
     }

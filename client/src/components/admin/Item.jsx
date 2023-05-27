@@ -1,16 +1,10 @@
-import {Box, Button, ButtonBase, Container, Grid, Modal, styled, Typography} from "@mui/material";
+import { Box, Button, ButtonBase, Container, Grid, Modal, styled, Typography } from '@mui/material';
 import React from 'react';
-import PropTypes from "prop-types";
-import useAuthWithPermissions from "../../authentication/useAuthWithPermissions";
+import PropTypes from 'prop-types';
 
-export const AdminItem = ({product}) => {
+export const AdminItem = ({ product, authKey }) => {
     const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
-    // eslint-disable-next-line no-unused-vars
-    const [isAuthenticated, credentials, authKey, hasPermissions, callLogin, callLogout] = useAuthWithPermissions([
-        'items.see',
-        'items.manage',
-        'products.create'
-    ]);
+
     const Img = styled('img')({
         margin: 'auto',
         display: 'block',
@@ -41,73 +35,72 @@ export const AdminItem = ({product}) => {
     };
     const handleDeleteItem = () => {
         fetch(`http://localhost:5000/product/${product.id}`, {
-            method: "DELETE",
+            method: 'DELETE',
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${authKey}`
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${authKey}`,
             },
-        })
-            .then((response) => {
-                if (response.ok) {
-                    window.location.reload(false);
-                    return response.json();
-                }
-                else {
-                    return response.text().then(text => { console.log(text)});
-                }
-            });
-    }
-    
+        }).then((response) => {
+            if (response.ok) {
+                window.location.reload(false);
+                return response.json();
+            } else {
+                return response.text().then((text) => {
+                    console.log(text);
+                });
+            }
+        });
+    };
+
     const getMoneyFromCents = (cents) => {
         return cents / 100;
     };
-    
+
     const DeleteModal = () => {
         return (
-            <Modal
-                open={openDeleteModal}
-                onClose={handleCloseDeleteModal}>
-                <Box sx={{...modalStyle, width: 500 }}>
-                    <Typography variant={"h5"} id="thumbnail-title" sx={{mb: 2}}>Do you really want to delete this item?</Typography>
-                    <Button align={"right"} onClick={handleDeleteItem} color={"primary"}>
+            <Modal open={openDeleteModal} onClose={handleCloseDeleteModal}>
+                <Box sx={{ ...modalStyle, width: 500 }}>
+                    <Typography variant={'h5'} id="thumbnail-title" sx={{ mb: 2 }}>
+                        Do you really want to delete this item?
+                    </Typography>
+                    <Button align={'right'} onClick={handleDeleteItem} color={'primary'}>
                         Yes
                     </Button>
-                    <Button align={"right"} onClick={handleCloseDeleteModal}>
+                    <Button align={'right'} onClick={handleCloseDeleteModal}>
                         No
                     </Button>
                 </Box>
             </Modal>
-        )
-    }
-    
+        );
+    };
+
     return (
         <Container>
-            {openDeleteModal && <DeleteModal/>}
-            <Grid container  sx={{
-                px: 2,
-                pb: 1
-            }}>
-                <Grid item xs={4}>
-                </Grid>
-                <Grid item xs={8} style={{display: "flex", justifyContent:"flex-end"}}>
-                    <Button href={`/admin/item/${product.id}`}>
-                        Edit
-                    </Button>
-                    <Button onClick={handleOpenDeleteModal}>
-                        Delete
-                    </Button>
+            {openDeleteModal && <DeleteModal />}
+            <Grid
+                container
+                sx={{
+                    px: 2,
+                    pb: 1,
+                }}
+            >
+                <Grid item xs={4}></Grid>
+                <Grid item xs={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button href={`/admin/item/${product.id}`}>Edit</Button>
+                    <Button onClick={handleOpenDeleteModal}>Delete</Button>
                 </Grid>
                 <Grid item xs={4}>
                     <ButtonBase sx={{ width: 128, height: 128 }}>
-                        <Img alt="item" src={product.thumbnail.link}/>
+                        <Img alt="item" src={product.thumbnail.link} />
                     </ButtonBase>
                 </Grid>
                 <Grid item xs={8}>
-                    <Typography style={{ wordWrap: "break-word" }} variant={"h5"}>{product.name}</Typography>
-                    <Typography style={{ wordWrap: "break-word" }}>{product.description}</Typography>
+                    <Typography style={{ wordWrap: 'break-word' }} variant={'h5'}>
+                        {product.name}
+                    </Typography>
+                    <Typography style={{ wordWrap: 'break-word' }}>{product.description}</Typography>
                 </Grid>
-                <Grid item xs={4}>
-                </Grid>
+                <Grid item xs={4}></Grid>
                 <Grid item xs={8}>
                     <Grid container>
                         <Grid item xs={6}>
@@ -121,9 +114,9 @@ export const AdminItem = ({product}) => {
             </Grid>
         </Container>
     );
-
-}
+};
 
 AdminItem.propTypes = {
     product: PropTypes.object,
+    authKey: PropTypes.string,
 };

@@ -30,9 +30,9 @@ public class OrderService : IOrderService
         return _orderRepository.Get(id);
     }
 
-    public async Task<Result<Order>> Add(OrderDto entity)
+    public async Task<Result<Order>> Add(OrderDto entity, Guid userId)
     {
-        var result = await MakeOrder(entity);
+        var result = await MakeOrder(entity, userId);
         if (result.IsFailed)
         {
             return Result.Fail(result.Reasons.Select(x => x.Message));
@@ -78,7 +78,7 @@ public class OrderService : IOrderService
         return result;
     }
 
-    private async Task<Result<Order>> MakeOrder(OrderDto newEntity, Guid? orderId = null)
+    private async Task<Result<Order>> MakeOrder(OrderDto newEntity, Guid userId, Guid? orderId = null)
     {
         var productTasks = newEntity.ItemsInOrder.Select(x => _productRepository.Get(x.ProductId)).ToList();
         await Task.WhenAll(productTasks);
@@ -97,13 +97,14 @@ public class OrderService : IOrderService
 
         return new Order(
             orderId.Value,
+            userId,
             orderProducts.ToList(),
             newEntity.OrderStatus,
             DateTime.UtcNow,
             DateTime.UtcNow);
     }
 
-    public async Task<Result<Order>> MakeOrderFromCart(Guid cartId)
+    public async Task<Result<Order>> MakeOrderFromCart(Guid cartId, Guid userId)
     {
         var cart = await _cartRepository.Get(cartId);
         if (cart.IsFailed)
@@ -114,8 +115,8 @@ public class OrderService : IOrderService
         var order = await MakeOrder(new OrderDto
         (
             cart.Value.CartItems.Select(x => new ItemInOrder(x.ProductId, x.Quantity)).ToList(),
-            OrderStatus.AwaitingPayment
-        ));
+            OrderStatus.Created
+        ), userId);
 
         if (order.IsFailed)
         {
@@ -125,7 +126,10 @@ public class OrderService : IOrderService
         cart.Value.CartItems.Clear();
         await _cartRepository.SaveChanges();
 
-        return order;
+        await _orderRepository.Add(order.Value);
+        await _orderRepository.SaveChanges();
+
+        return Result.Ok(order.Value);
     }
 
 }

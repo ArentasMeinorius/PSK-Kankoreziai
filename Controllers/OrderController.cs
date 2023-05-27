@@ -7,8 +7,8 @@ using Kankoreziai.Services.Authentication;
 namespace Kankoreziai.Controllers;
 
 [ApiController]
-[Route("[controller]/[action]")]
-public class OrderController : ControllerBase
+[Route("[controller]")]
+public class OrderController : Controller
 {
     private readonly IOrderService _service;
     private readonly IAuthenticationService _authenticationService;
@@ -19,17 +19,17 @@ public class OrderController : ControllerBase
         _authenticationService = authenticationService;
     }
 
-    [HttpGet]
+    [HttpGet("all")]
     [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
     [Produces("application/json")]
-    [RequiresAuthentication("orders.all")]
+    [RequiresAuthentication("orders.fetchall")]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _service.GetAll());
     }
 
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
@@ -50,7 +50,13 @@ public class OrderController : ControllerBase
     [RequiresAuthentication]
     public async Task<IActionResult> Post(OrderDto newEntity)
     {
-        var result = await _service.Add(newEntity);
+        var user = _authenticationService.User;
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _service.Add(newEntity, user.Guid);
         if (result.IsFailed)
         {
             return StatusCode(400, result.Reasons);
@@ -58,10 +64,9 @@ public class OrderController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPost]
+    [HttpPost("cart")]
     [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
     [Produces("application/json")]
-    [ActionName("cart")]
     [RequiresAuthentication]
     public async Task<IActionResult> PostFromUserCart()
     {
@@ -71,7 +76,7 @@ public class OrderController : ControllerBase
             return Unauthorized();
         }
 
-        var result = await _service.MakeOrderFromCart(user.CartId);
+        var result = await _service.MakeOrderFromCart(user.CartId, user.Guid);
         if (result.IsFailed)
         {
             return StatusCode(400, result.Reasons);

@@ -10,10 +10,12 @@ export default function CartPage() {
 
     return (
         <Grid container>
-            <Grid item xs={8}>
-                <Cart total={total} setTotal={setTotal} isOrderSubmitted={isOrderSubmitted} />
-            </Grid>
-            <Grid item xs={4}>
+            {!isOrderSubmitted && (
+                <Grid item xs={isOrderSubmitted ? 0 : 8}>
+                    <Cart total={total} setTotal={setTotal} isOrderSubmitted={isOrderSubmitted} />
+                </Grid>
+            )}
+            <Grid item xs={isOrderSubmitted ? 12 : 4}>
                 <Checkout
                     totalPrice={total}
                     isOrderSubmitted={isOrderSubmitted}

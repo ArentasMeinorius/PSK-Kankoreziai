@@ -3,6 +3,8 @@
 public record Order
 {
     public Guid Id { get; init; }
+
+    public Guid UserId { get; init; }
     public List<OrderProduct> OrderProducts { get; init; } = new();
     public OrderStatus OrderStatus { get; init; }
     public DateTime UpdatedAt { get; init; }
@@ -12,9 +14,10 @@ public record Order
     {
     }
 
-    public Order(Guid id, List<OrderProduct> orderProducts, OrderStatus orderStatus, DateTime updatedAt, DateTime createdAt)
+    public Order(Guid id, Guid userId, List<OrderProduct> orderProducts, OrderStatus orderStatus, DateTime updatedAt, DateTime createdAt)
     {
         Id = id;
+        UserId = userId;
         OrderProducts = orderProducts;
         OrderStatus = orderStatus;
         UpdatedAt = updatedAt;
