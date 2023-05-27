@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PropTypes } from 'prop-types';
 import {
     Container,
     Table,
@@ -15,13 +16,11 @@ import {
 import { useCart } from '../../cart/useCart';
 import { useAuth } from '../../authentication/useAuth';
 
-export default function Cart() {
-    const [total, setTotal] = useState(0);
-
+export default function Cart(props) {
     // eslint-disable-next-line no-unused-vars
     const [isAuthenticated, credentials, authKey, callLogin, callLogout] = useAuth();
     // eslint-disable-next-line no-unused-vars
-    const [cart, isLoaded, error, addToCart, removeFromCart, setQuantity] = useCart();
+    const [cart, isLoaded, cartError, addToCart, removeFromCart, setQuantity] = useCart();
     const [products, setProducts] = useState([]);
 
     async function getProductById(guid) {
@@ -39,7 +38,7 @@ export default function Cart() {
         for (var i = 0; i < products.length; i++) {
             tempTotal += products[i].price.cents * cart[i].quantity.units;
         }
-        setTotal(tempTotal);
+        props.setTotal(tempTotal);
     }, [products]);
 
     const removeItemFromCart = (cartElement) => {
@@ -79,7 +78,7 @@ export default function Cart() {
         return <Typography variant="h4">Please login to see your cart</Typography>;
     }
 
-    if (cart.length === 0) {
+    if (props.isOrderSubmitted || cart.length === 0) {
         return (
             <Container>
                 <Typography variant="h4">Your cart is empty</Typography>
@@ -95,12 +94,10 @@ export default function Cart() {
         );
     }
 
-    console.log(products);
-
     return (
         <Container>
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="spanning table">
+                <Table sx={{ minWidth: '650' }} aria-label="spanning table">
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
@@ -141,7 +138,7 @@ export default function Cart() {
                             <TableCell />
                             <TableCell />
                             <TableCell />
-                            <TableCell align="right">{getPrice(total)} €</TableCell>
+                            <TableCell align="right">{getPrice(props.total)} €</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -149,3 +146,8 @@ export default function Cart() {
         </Container>
     );
 }
+Cart.propTypes = {
+    total: PropTypes.number,
+    setTotal: PropTypes.func,
+    isOrderSubmitted: PropTypes.bool,
+};
