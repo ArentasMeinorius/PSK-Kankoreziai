@@ -10,4 +10,5 @@ public interface IOrderService
     Task<Result<Order>> Add(OrderDto entity);
     Task<Result<Order>> Update(Guid id, OrderDto newEntity);
     Task<Result<Guid>> Delete(Guid id);
+    Task<Result<Order>> MakeOrderFromCart(Guid cartId);
 }

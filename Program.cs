@@ -1,6 +1,8 @@
 using Kankoreziai.Database;
 using Kankoreziai.Middleware;
 using Kankoreziai.Services;
+using Kankoreziai.Services.Authentication;
+using Kankoreziai.Services.Carts;
 using Kankoreziai.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -39,6 +41,8 @@ services.AddScoped<IOrderRepository, OrderRepository>();
 services.AddScoped<IOrderService, OrderService>();
 services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IUserService, UserService>();
+services.AddScoped<ICartRepository, CartRepository>();
+services.AddScoped<ICartService, CartService>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 services.AddHttpContextAccessor();
