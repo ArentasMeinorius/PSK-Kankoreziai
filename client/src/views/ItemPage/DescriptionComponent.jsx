@@ -36,7 +36,7 @@ const DescriptionComponent = ({ itemInfo }) => {
                     {itemInfo?.name}
                 </Typography>
                 <Typography variant="h6">Price: {getMoneyFromCents(itemInfo?.price?.cents)} €</Typography>
-                <Typography variant="body1">{itemInfo.description}</Typography>
+                <Typography variant="body1" style={{ wordWrap: "break-word" }}>{itemInfo.description}</Typography>
                 <Typography variant="h6">In stock: {itemInfo?.quantity?.units}</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={4}>

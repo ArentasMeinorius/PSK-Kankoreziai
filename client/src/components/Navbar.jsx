@@ -11,12 +11,9 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router';
 import LoginButton from './auth/LoginButton';
+import {Link} from "@mui/material";
 
 const defaultPages = [
-    {
-        title: 'Landing',
-        redirect: '/',
-    },
     {
         title: 'Cart',
         redirect: '/Cart',
@@ -47,9 +44,11 @@ const Navbar = () => {
         <AppBar position="fixed">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
-                        FLOWER SHOP
-                    </Typography>
+                    <MenuItem onClick={() => handleClickRedirect('/')} color={"white"}>
+                        <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
+                            FLOWER SHOP
+                        </Typography>
+                    </MenuItem>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
@@ -87,14 +86,16 @@ const Navbar = () => {
                             ))}
                         </Menu>
                     </Box>
-                    <Typography
+                    <Link
                         variant="h6"
                         noWrap
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
+                        href={'/'}
+                        underline={"none"}
                     >
                         FLOWER SHOP
-                    </Typography>
+                    </Link>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {defaultPages.map((page) => (
                             <Button
