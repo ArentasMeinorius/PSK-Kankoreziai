@@ -22,6 +22,7 @@ public class OrderController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(List<Order>), StatusCodes.Status200OK)]
     [Produces("application/json")]
+    [RequiresAuthentication("orders.all")]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _service.GetAll());
@@ -32,6 +33,7 @@ public class OrderController : ControllerBase
     [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
+    [RequiresAuthentication]
     public async Task<IActionResult> Get(Guid id)
     {
         var result = await _service.Get(id); 
@@ -45,6 +47,7 @@ public class OrderController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
     [Produces("application/json")]
+    [RequiresAuthentication]
     public async Task<IActionResult> Post(OrderDto newEntity)
     {
         var result = await _service.Add(newEntity);
@@ -80,6 +83,7 @@ public class OrderController : ControllerBase
     [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Produces("application/json")]
+    [RequiresAuthentication("orders.edit")]
     public async Task<IActionResult> Put(Guid id, OrderDto newEntity)
     {
         var result = await _service.Update(id, newEntity);
@@ -93,6 +97,7 @@ public class OrderController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [Produces("application/json")]
+    [RequiresAuthentication("orders.delete")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _service.Delete(id);
