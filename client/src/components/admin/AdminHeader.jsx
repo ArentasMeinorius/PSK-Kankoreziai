@@ -6,7 +6,7 @@ export const AdminHeader = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
 
     const pages = ['Admin menu', 'Add new item', 'List of orders'];
-    const route = ['/admin-page', '/admin/item', '/admin/order']
+    const route = ['/admin/item', '/admin/item/new', '/admin/order']
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -17,9 +17,14 @@ export const AdminHeader = () => {
     };
     
     return (
-        <AppBar position="static">
+        <AppBar position="static" elevation={0} sx={{
+            bgcolor: "white",
+            border: 2,
+            borderColor: 'primary.main',
+            borderRadius: '16px',
+        }}>
             <Container maxWidth="xl">
-                <Toolbar disableGutters>
+                <Toolbar disableGutters >
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
@@ -61,7 +66,7 @@ export const AdminHeader = () => {
                             <Button
                                 key={page}
                                 href={route[i]}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{ my: 2, color: 'black', display: 'block' }}
                             >
                                 {page}
                             </Button>

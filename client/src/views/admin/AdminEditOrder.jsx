@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {AdminHeader} from "../../components/admin/AdminHeader";
-import {EditItem} from "../../components/admin/EditItem";
 import {Container, Typography} from "@mui/material";
+import {EditOrder} from "../../components/admin/EditOrder";
 
-const AdminEditItem = () => {
-    const [productInfo, setProductInfo] = useState({});
+const AdminEditOrder = () => {
+    const [orderInfo, setOrderInfo] = useState({});
     let { id } = useParams();
 
     useEffect(() => {
-        fetch(`http://localhost:5000/product/${id}`)
+        fetch(`http://localhost:5000/order/${id}`)
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -17,20 +17,20 @@ const AdminEditItem = () => {
                 throw response;
             })
             .then((data) => {
-                setProductInfo(data);
+                setOrderInfo(data);
             });
     }, [id]);
     
-    if (productInfo && productInfo?.pictures) {
+    if (Object.keys(orderInfo).length !== 0) {
         return (
             <Container>
                 <AdminHeader/>
-                <EditItem currentProduct={productInfo} newItem={false}/>
+                <EditOrder currentOrder={orderInfo}/>
             </Container>
         );
     }
     else
         return <Typography>Loading...</Typography>;
-    }
-    
-export default AdminEditItem;
+}
+
+export default AdminEditOrder;

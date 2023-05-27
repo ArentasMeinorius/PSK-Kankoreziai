@@ -51,7 +51,11 @@ public class ProductService : IProductService
         var changedProduct = oldProductResult.Value with
         {
             Name = newEntity.Name,
-            Price = newEntity.Price
+            Price = newEntity.Price,
+            Quantity = newEntity.Quantity,
+            Description = newEntity.Description,
+            Thumbnail = newEntity.Thumbnail
+            
         };
         var deleteResult = await _repository.Delete(oldProductResult.Value.Id);
         if (deleteResult.IsFailed)

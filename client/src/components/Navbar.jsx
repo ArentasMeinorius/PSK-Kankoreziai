@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router';
 import LoginButton from './auth/LoginButton';
+import AdminButton from "./admin/AdminButton";
 
 const defaultPages = [
     {
@@ -42,7 +43,7 @@ const Navbar = () => {
     return (
         <AppBar position="fixed">
             <Container maxWidth="xl">
-                <Toolbar disableGutters>
+                <Toolbar disableGutters >
                     <Typography variant="h6" noWrap component="div" sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}>
                         FLOWER SHOP
                     </Typography>
@@ -102,7 +103,7 @@ const Navbar = () => {
                             </Button>
                         ))}
                     </Box>
-
+                    <AdminButton />
                     <LoginButton />
                 </Toolbar>
             </Container>

@@ -10,10 +10,15 @@ export const AdminItem = ({product}) => {
         maxHeight: '100%',
     });
     
-    console.log(product);
+    const getMoneyFromCents = (cents) => {
+        return cents / 100;
+    };
     
     return (
-        <Grid container spacing={2}>
+        <Grid container  sx={{
+            px: 2,
+            pb: 1
+        }}>
             <Grid item xs={4}>
             </Grid>
             <Grid item xs={8} style={{display: "flex", justifyContent:"flex-end"}}>
@@ -30,16 +35,20 @@ export const AdminItem = ({product}) => {
                 </ButtonBase>
             </Grid>
             <Grid item xs={8}>
-                <Typography>{product.name}</Typography>
-                {/*<Typography>{product.price}</Typography>*/}
+                <Typography variant={"h5"}>{product.name}</Typography>
                 <Typography>{product.description}</Typography>
             </Grid>
             <Grid item xs={4}>
-                {/*<Typography>{product.description}</Typography>*/}
             </Grid>
             <Grid item xs={8}>
-                {/*<Typography>{product.price}</Typography>*/}
-                <Typography>{product.description}</Typography>
+                <Grid container>
+                    <Grid item xs={6}>
+                        <Typography>Price: {getMoneyFromCents(product.price.cents)}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Typography>Quantity: {product.quantity.units}</Typography>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     );

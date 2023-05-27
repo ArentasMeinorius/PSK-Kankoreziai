@@ -1,16 +1,24 @@
 import {AdminHeader} from "../../components/admin/AdminHeader";
 import React, { useState, useEffect } from 'react';
-import {Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import {Button, Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 
 export default function AdminOrderList() {
     const [orders, setOrders] = useState([]);
+
+    const orderStatus = [
+        'Awaiting Payment',
+        'Payment Accepted',
+        'Payment Rejected',
+        'Being Prepared',
+        'Waiting For Pickup',
+        'Completed'
+    ];
 
     const getMoneyFromCents = (cents) => {
         return cents / 100;
     };
 
     const calculateOrderPrice = (order) => {
-        console.log(order);
         return getMoneyFromCents(order.orderProducts.reduce((acc, curr) => acc + (curr.product.price.cents) * (curr.quantity.units), 0));
     }
     
@@ -28,9 +36,17 @@ export default function AdminOrderList() {
     }, []);
 
     return (
-        <div>
+        <Container>
             <AdminHeader/>
-            <TableContainer >
+            <TableContainer sx={{
+                m:'auto',
+                mt: 3,
+                p: 2,
+                width: "90%",
+                border: 1,
+                borderColor: 'primary.main',
+                borderRadius: '16px',
+            }}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -52,7 +68,7 @@ export default function AdminOrderList() {
                                 {calculateOrderPrice(order)}
                             </TableCell>
                             <TableCell align="right">
-                                {order.orderStatus}
+                                {orderStatus[order.orderStatus]}
                             </TableCell>
                             <TableCell align="right">
                                 {order.createdAt}
@@ -61,8 +77,9 @@ export default function AdminOrderList() {
                                 {order.updatedAt}
                             </TableCell>
                             <TableCell align="right">
-                                <Button>
-                                    Cancel order
+                                <Button
+                                    href={`/admin/order/${order.id}`}>
+                                    Edit order
                                 </Button>
                             </TableCell>
                         </TableRow>
@@ -71,6 +88,6 @@ export default function AdminOrderList() {
                 </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+        </Container>
     )
 }

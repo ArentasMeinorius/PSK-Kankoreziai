@@ -1,31 +1,36 @@
 import React from "react";
 import {AdminHeader} from "../../components/admin/AdminHeader";
 import {EditItem} from "../../components/admin/EditItem";
+import {Container} from "@mui/material";
 
 const AdminEditItem = () => {
-    const defaultItem = {
+    const defaultItem = 
+    {
         "name": "",
         "price": {
-            "cents": 0
+        "cents": 0
         },
         "description": "",
         "thumbnail": {
-            "link": "https://springbreakisland-de.ams3.digitaloceanspaces.com/woocommerce-placeholder.png"
-        },
+        "link": "https://springbreakisland-de.ams3.digitaloceanspaces.com/woocommerce-placeholder.png"
+    },
         "pictures": {
-            "links": []
-        },
+        "links": [
+            ""
+        ]
+    },
         "quantity": {
-            "units": 5
-        },
-        "category": 0
+        "units": 0
+    },
+        "category": 0,
+        "season": 0
     }
     
     return (
-        <div>
+        <Container>
             <AdminHeader/>
             <EditItem currentProduct={defaultItem} newItem={true}/>
-        </div>
+        </Container>
     );
 }
 
