@@ -2,6 +2,7 @@
 
 public enum OrderStatus
 {
+    Created,
     AwaitingPayment,
     PaymentAccepted,
     PaymentRejected,
