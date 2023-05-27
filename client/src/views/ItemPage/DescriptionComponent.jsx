@@ -1,19 +1,17 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Container, Grid, Input, Typography, useTheme } from '@mui/material';
-import { addToCart } from '../../cart/cartHandler';
+import { useCart } from '../../cart/useCart';
 
 const DescriptionComponent = ({ itemInfo }) => {
     const theme = useTheme();
     const [quantity, setQuantity] = React.useState(1);
+    // eslint-disable-next-line no-unused-vars
+    const [cart, isLoaded, error, addToCart, removeFromCart, changeQuantity] = useCart();
 
     const getMoneyFromCents = (cents) => {
         return cents / 100;
     };
-
-    function addItemToCart(item, quantity) {
-        addToCart(item, quantity);
-    }
 
     function handleQuantityChange(event) {
         if (event.target.value < 1) {
@@ -38,7 +36,7 @@ const DescriptionComponent = ({ itemInfo }) => {
                     {itemInfo?.name}
                 </Typography>
                 <Typography variant="h6">Price: {getMoneyFromCents(itemInfo?.price?.cents)} €</Typography>
-                <Typography variant="body1">{itemInfo.description}</Typography>
+                <Typography variant="body1" style={{ wordWrap: "break-word" }}>{itemInfo.description}</Typography>
                 <Typography variant="h6">In stock: {itemInfo?.quantity?.units}</Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
@@ -52,7 +50,7 @@ const DescriptionComponent = ({ itemInfo }) => {
                         />
                     </Grid>
                     <Grid item xs={8}>
-                        <Button variant="contained" fullWidth onClick={() => addItemToCart(itemInfo, quantity)}>
+                        <Button variant="contained" fullWidth onClick={() => addToCart(itemInfo, quantity)}>
                             Add to cart
                         </Button>
                     </Grid>

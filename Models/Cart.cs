@@ -3,13 +3,21 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Kankoreziai.Models
 {
-    public record User
+    public record Cart
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Guid { get; set; }
-        public string Email { get; set; }
-        public List<string> Permissions { get; set; } = new();
-        public Guid CartId { get; set; }
+        public List<CartItem> CartItems { get; set; }
+
+        public Cart()
+        {
+
+        }
+        public Cart(Guid guid)
+        {
+            Guid = guid;
+            CartItems = new List<CartItem>();
+        }
     }
 }

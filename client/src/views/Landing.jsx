@@ -16,7 +16,7 @@ const Landing = () => {
                 throw response;
             })
             .then((data) => {
-                setProducts(data);
+                setProducts(data.slice(0, 2));
             });
     }, []);
 

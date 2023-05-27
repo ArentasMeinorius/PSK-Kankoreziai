@@ -12,6 +12,8 @@ public class KankoreziaiDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
 
+    public DbSet<Cart> Carts { get; set; }
+
     public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,6 +55,14 @@ public class KankoreziaiDbContext : DbContext
                 quantity => quantity.Units,
                 quantity => new Quantity(quantity)
             );
+
+        modelBuilder.Entity<CartItem>()
+        .Property(ci => ci.Quantity)
+        .HasConversion(
+            quantity => quantity.Units,
+            quantity => new Quantity(quantity)
+        );
+                                        
     }
 
     public void InitializeData()

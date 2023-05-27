@@ -1,6 +1,8 @@
 using Kankoreziai.Database;
 using Kankoreziai.Middleware;
 using Kankoreziai.Services;
+using Kankoreziai.Services.Authentication;
+using Kankoreziai.Services.Carts;
 using Kankoreziai.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +23,7 @@ services.AddScoped<IUserService, UserService>();
 
 services.AddControllersWithViews();
 services.AddSwaggerGen(options =>
-{ 
+{
     options.EnableAnnotations();
 });
 
@@ -43,6 +45,8 @@ services.AddScoped<IOrderRepository, OrderRepository>();
 services.AddScoped<IOrderService, OrderService>();
 services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IUserService, UserService>();
+services.AddScoped<ICartRepository, CartRepository>();
+services.AddScoped<ICartService, CartService>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 services.AddHttpContextAccessor();
@@ -77,7 +81,7 @@ app.UseSwagger(options =>
 
 app.UseSwaggerUI(options =>
 {
-    options.SwaggerEndpoint( "/api/swagger/v1/swagger.json", "Kankoreziai API");
+    options.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Kankoreziai API");
     options.RoutePrefix = "api/swagger";
 });
 
